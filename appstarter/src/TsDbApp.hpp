@@ -1,6 +1,9 @@
 #pragma once
 #include <filesystem>
 #include <string>
+#include <reproc++/reproc.hpp>
+#include <map>
+#include "options/environment_vars.hpp"
 
 namespace cwms {
     namespace opendcs {
@@ -13,19 +16,26 @@ class TsDbApp {
         /**
          *  Name on disk of profile to use to start the application. 
          */
-        std::filesystem::path profile;
+        const std::filesystem::path profile;
         /**
          * HDB Loading Application ID to assign
         */
-        std::string app_name;
+        const std::string app_name;
 
         /**
          * Java class to be executed.
         */
-        std::string app_class;
-    public:
+        const std::string app_class;
+        const std::string classpath;
+        const std::map<std::string,std::string> properties;
+
+
         TsDbApp(std::filesystem::path profile, std::string app_name, std::string app_class);
-        void run();
+    public:
+        
+        int run();
+
+        static TsDbApp create(std::filesystem::path profile, const environment_vars& vars);
 };
 
     }

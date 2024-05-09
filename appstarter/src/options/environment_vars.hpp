@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <filesystem>
 #include <cstdlib>
 
 namespace cwms {
@@ -15,10 +16,10 @@ const std::string OFFICE = "CWMS_OFFICE";
 const std::string DATATYPE_STANDARD = "DATATYPE_STANDARD";
 const std::string KEY_GENERATOR = "KEYGENERATOR";
 const std::string APPLICATION_NAME = "APPLICATION_NAME";
+const std::string DCSTOOL_HOME = "DCSTOOL_HOME";
 
 
 struct environment_vars {
-    const std::string user_dir;
     const std::string type;
     const std::string database_url;
     const std::string database_auth;
@@ -27,6 +28,8 @@ struct environment_vars {
     const std::string datatype_standard;
     const std::string key_generator;
     const std::string application_name;
+    const std::filesystem::path install_dir;
+    const std::filesystem::path user_dir;
 
 
     environment_vars() = delete;    
@@ -38,9 +41,9 @@ struct environment_vars {
 
     static environment_vars build();
     private:
-        environment_vars(std::string user_dir, std::string type, std::string database_url, std::string database_auth,
-                         std::string database_driver, std::vector<std::string> offices, std::string datatype_standard,
-                         std::string key_generator, std::string application_name);
+        environment_vars(std::string type, std::string database_url, std::string database_auth, std::string database_driver,
+                         std::vector<std::string> offices, std::string datatype_standard, std::string key_generator,
+                         std::string application_name, std::filesystem::path install_dir, std::filesystem::path user_dir);
 };
 
     }

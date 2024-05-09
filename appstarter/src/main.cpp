@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
             return wait_time.count();
         }));
     }
+    
     while(true) {
         for (auto& f: app_results) {
             std::future_status status = f.wait_for(0ms);
