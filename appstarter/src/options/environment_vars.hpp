@@ -10,8 +10,6 @@ const std::string USERDIR = "DCSTOOL_USERDIR";
 const std::string TYPE = "DATABASE_TYPE";
 const std::string DATABASE_URL = "DATABASE_URL";
 const std::string DATABASE_AUTH = "DB_AUTH";
-const std::string DATABASE_USERNAME = "DATABASE_USERNAME";
-const std::string DATABASE_PASSWORD = "DATABASE_PASSWORD";
 const std::string DATABASE_DRIVER = "DATABASE_DRIVER";
 const std::string OFFICE = "CWMS_OFFICE";
 const std::string DATATYPE_STANDARD = "DATATYPE_STANDARD";
@@ -24,8 +22,6 @@ struct environment_vars {
     const std::string type;
     const std::string database_url;
     const std::string database_auth;
-    const std::string database_username;
-    const std::string database_password;
     const std::string database_driver;
     const std::vector<std::string> offices;
     const std::string datatype_standard;
@@ -43,11 +39,8 @@ struct environment_vars {
     static environment_vars build();
     private:
         environment_vars(std::string user_dir, std::string type, std::string database_url, std::string database_auth,
-                         std::string database_username, std::string database_password, std::string database_driver,
-                         std::vector<std::string> offices, std::string datatype_standard, std::string key_generator,
-                         std::string application_name);
-                         
-
+                         std::string database_driver, std::vector<std::string> offices, std::string datatype_standard,
+                         std::string key_generator, std::string application_name);
 };
 
     }
