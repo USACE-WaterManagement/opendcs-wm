@@ -35,8 +35,8 @@ struct environment_vars {
     environment_vars() = delete;    
     environment_vars(const environment_vars& other) = default;
     environment_vars(environment_vars&& other) = default;
-    environment_vars& operator=(const environment_vars& other) = default;
-    environment_vars& operator=(environment_vars&& other) = default;
+    environment_vars& operator=(const environment_vars& other) = delete;
+    environment_vars& operator=(environment_vars&& other) = delete;
     ~environment_vars() = default;
 
     static environment_vars build();

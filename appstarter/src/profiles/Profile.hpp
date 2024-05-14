@@ -21,8 +21,8 @@ class Profile {
         ~Profile() = default;
         Profile(const Profile& other) = default;
         Profile(Profile&& other) = default;
-        Profile& operator= (const Profile& other) = default;
-        Profile& operator= (Profile &&other) = default;
+        Profile& operator= (const Profile& other) = delete;
+        Profile& operator= (Profile &&other) = delete;
 
         const std::filesystem::path& get_profile_path() const;
         const std::string get_office() const;
