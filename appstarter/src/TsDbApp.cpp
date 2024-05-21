@@ -56,6 +56,9 @@ std::shared_future<int> TsDbApp::get_future() {
 }
 
 std::vector<fs::path> get_jars(const fs::path& dir) {
+    if (!fs::exists(dir)) {
+        return {};
+    }
     std::vector<fs::path> jars;
     for(const auto& entry: fs::directory_iterator(dir)) {
         if (entry.is_regular_file() && entry.path().extension() == ".jar") {

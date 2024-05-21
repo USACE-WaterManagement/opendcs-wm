@@ -17,7 +17,7 @@ EditOutputFormat=Human-Readable
 
 jdbcDriverClass=OPENDCS_DATABASE_DRIVER
 
-SqlKeyGenerator=OPENDCS_KEYGENERATOR
+SqlKeyGenerator=decodes.sql.OracleSequenceKeyGenerator
 sqlDateFormat=yyyy-MM-dd HH\:mm\:ss
 sqlTimeZone=UTC
 dbOfficeId=OPENDCS_CWMS_OFFICE
@@ -32,5 +32,4 @@ dataTypeStdPreference=OPENDCS_DATATYPE_STANDARD
 #decwizDecodedDataDir=
 #decwizSummaryLog=
 
-dbAuthFile=OPENDCS_DB_AUTH
-#env-auth-source:username=DATABASE_USERNAME,password=DATABASE_PASSWORD
+dbAuthFile=env-auth-source:username=DATABASE_USERNAME,password=DATABASE_PASSWORD
