@@ -13,11 +13,11 @@ RUN mkdir /driver_app \
     && cp /src/decodes.properties.template /driver_app/decodes.properties.template
 
 FROM ghcr.io/opendcs/opendcs/compproc:7.0.12 as compproc
-
+HEALTHCHECK --interval=2m --timeout=30s --start-period=60s --retries=3 CMD [ "/appstarter", "--check" ]
 COPY --from=builder /driver_app /
-CMD [ "/appstarter", "/decodes.properties.template"]
+CMD [ "/appstarter", "-t/decodes.properties.template"]
 
 FROM ghcr.io/opendcs/opendcs/compdepends:7.0.12 as compdepends
-
+HEALTHCHECK --interval=2m --timeout=30s --start-period=60s --retries=3 CMD [ "/appstarter", "--check" ]
 COPY --from=builder /driver_app /
-CMD [ "/appstarter", "/decodes.properties.template"]
+CMD [ "/appstarter", "-t/decodes.properties.template"]

@@ -10,3 +10,6 @@ FetchContent_Declare(
 set(REPROC++ ON)
 set(REPROC_OBJECT_LIBRARIES ON)
 FetchContent_MakeAvailable(reproc)
+
+
+add_subdirectory(optionparser)
