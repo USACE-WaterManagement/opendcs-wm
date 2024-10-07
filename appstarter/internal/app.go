@@ -10,7 +10,7 @@ type TsdbApp struct {
 }
 
 func CreateApp(profile Profile, env EnvironmentVars) TsdbApp {
-	var app = TsdbApp{profile, env.InstallDir, nil, "decodes.tsdb.ComputationApp", "", nill}
+	var app = TsdbApp{profile, env.InstallDir, nil, "decodes.tsdb.ComputationApp", "", nil}
 
 	return app
 }
