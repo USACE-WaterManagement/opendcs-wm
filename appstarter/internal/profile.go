@@ -13,7 +13,7 @@ type Profile struct {
 	Office      string
 }
 
-func GetProfile(environment EnvironmentVars, profileTemplate string) []Profile {
+func GetProfiles(environment EnvironmentVars, profileTemplate string) []Profile {
 	var ret []Profile
 
 	tmpl, err := template.New("test").Parse(profileTemplate)
