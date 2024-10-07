@@ -1,9 +1,11 @@
 package opendcs
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -12,18 +14,18 @@ import (
 type TsdbApp struct {
 	Profile    Profile
 	installDir string
-	properties []string
+	userDir    string
 	appClass   string
 	classPath  string
 	arguments  []string
 	handle     *exec.Cmd
 }
 
-func CreateApp(profile Profile, env EnvironmentVars) TsdbApp {
-	var app = TsdbApp{profile, env.InstallDir, nil, "decodes.tsdb.ComputationApp",
+func CreateApp(profile Profile, env EnvironmentVars) *TsdbApp {
+	var app = TsdbApp{profile, env.InstallDir, env.UserDir, "decodes.tsdb.ComputationApp",
 		build_class_path(env.InstallDir, env.UserDir), nil, nil}
 
-	return app
+	return &app
 }
 
 func build_class_path(dcsToolHome string, dcsToolUser string) string {
@@ -48,14 +50,41 @@ func build_class_path(dcsToolHome string, dcsToolUser string) string {
 }
 
 func (app *TsdbApp) Active() bool {
-	return !app.handle.ProcessState.Exited()
+	if app.handle != nil {
+		return app.handle.Process.Pid != 0
+	}
+	return false
 }
 
-func (app *TsdbApp) Start() {
-	err := app.handle.Start()
+func (app *TsdbApp) Start() error {
+	var err error
+	propsFile, err := os.OpenFile(fmt.Sprintf("args-%s-%s", app.Profile.Office, app.Profile.AppName),
+		os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	propsFile.WriteString("-cp ")
+	propsFile.WriteString(app.classPath)
+	propsFile.WriteString("\n")
+	propsFile.WriteString("-Xmx256m\n")
+	propsFile.WriteString(fmt.Sprintf("-DDCSTOOL_HOME=%s\n", app.installDir))
+	propsFile.WriteString(fmt.Sprintf("-DDCSTOOL_USERDIR=%s\n", app.userDir))
+	propsFile.WriteString(fmt.Sprintf("-DDECODES_INSTALL_DIR=%s\n", app.installDir))
+
+	propsFile.Close()
+	javaPath, err := exec.LookPath("java")
+	if err != nil {
+		panic(err)
+	}
+	app.handle = exec.Command(javaPath, fmt.Sprintf("@%s", propsFile.Name()),
+		app.appClass, "-P", app.Profile.ProfileFile, "-d3", "-l", "/dev/stdout")
+
+	err = app.handle.Start()
+	if err == nil {
+		log.Print("App started")
+	}
+	return err
 }
 
 func (app *TsdbApp) GetOutput() (io.ReadCloser, io.ReadCloser) {
