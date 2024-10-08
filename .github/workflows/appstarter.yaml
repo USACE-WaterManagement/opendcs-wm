@@ -26,10 +26,10 @@ jobs:
   build:
     name: Build container
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - uses: actions/checkout@v4
       - name: Build container
-        working-directory: appstarter
         run: |
           docker build -t wm/opendcs/compproc:latest --target=compproc .
           docker build -t wm/opendcs/compdepends:latest --target=compdepends .
