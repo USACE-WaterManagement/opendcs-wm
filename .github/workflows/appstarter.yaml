@@ -29,7 +29,7 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
-      - name: Build container
-        run: |
-          docker build -t wm/opendcs/compproc:latest --target=compproc .
-          docker build -t wm/opendcs/compdepends:latest --target=compdepends .
+      - name: Build comproc container
+        run: docker build -t wm/opendcs/compproc:latest --target=compproc .
+      - name: Build comproc container
+        run: docker build -t wm/opendcs/compdepends:latest --target=compdepends .
