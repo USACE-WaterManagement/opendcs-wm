@@ -1,0 +1,35 @@
+---
+name: App starter
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5.0.2
+        with:
+          go-version: 1.23.2
+      - name: test
+        working-directory: appstarter/internal
+        run: go test -v
+  build:
+    name: Build container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build container
+        working-directory: appstarter
+        run: |
+          docker build -t wm/opendcs/compproc:latest --target=compproc .
+          docker build -t wm/opendcs/compdepends:latest --target=compdepends .
