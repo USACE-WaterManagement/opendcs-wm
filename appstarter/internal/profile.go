@@ -13,9 +13,14 @@ type Profile struct {
 	Office      string
 }
 
+type data struct {
+	Env    EnvironmentVars
+	Office string
+}
+
 func GetProfiles(environment EnvironmentVars, profileTemplate string) []Profile {
 	var ret []Profile
-
+	var err error
 	tmpl, err := template.New("test").Parse(profileTemplate)
 	if err != nil {
 		panic(err)
@@ -27,11 +32,11 @@ func GetProfiles(environment EnvironmentVars, profileTemplate string) []Profile 
 		if err != nil {
 			log.Fatal(err)
 		}
-		data := map[string]interface{}{
-			"env":    environment,
-			"office": office,
+		data := data{environment, office}
+		err = tmpl.Execute(file, data)
+		if err != nil {
+			panic(err)
 		}
-		tmpl.Execute(file, data)
 		ret = append(ret, Profile{profileFile, environment.ApplicationName, office})
 
 		if err := file.Close(); err != nil {

@@ -87,6 +87,9 @@ func (app *TsdbApp) Start() error {
 	if err != nil {
 		panic(err)
 	}
+
+	app.handle.Env = append(os.Environ())
+
 	go redirectPipe(stdout, app, "info")
 	log.Print("Starting application")
 	err = app.handle.Start()

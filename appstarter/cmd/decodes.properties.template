@@ -4,32 +4,32 @@
 # are substitution placeholders for the 
 # initial docker run of the particular application
 #
-EditDatabaseType={{.DatabaseType}}
-EditDatabaseLocation={{.DatabaseUrl}}
+EditDatabaseType={{ .Env.DatabaseType }}
+EditDatabaseLocation={{ .Env.DatabaseUrl }}
 # Settings for the dbedit GUI:
 EditPresentationGroup=SHEF-English
 routingStatusDir=$DCSTOOL_USERDIR/routstat
 
 # Various agency-specific preferences:
-SiteNameTypePreference={{.DataTypeStandard}}
+SiteNameTypePreference={{.Env.DataTypeStandard}}
 EditTimeZone=UTC
 EditOutputFormat=Human-Readable
 
-jdbcDriverClass={{.DatabaseDriver}}
+jdbcDriverClass={{.Env.DatabaseDriver}}
 
 SqlKeyGenerator=decodes.sql.OracleSequenceKeyGenerator
 sqlDateFormat=yyyy-MM-dd HH\:mm\:ss
 sqlTimeZone=UTC
-dbOfficeId=OPENDCS_CWMS_OFFICE
-CwmsOfficeId=OPENDCS_CWMS_OFFICE
+dbOfficeId={{.Office}}
+CwmsOfficeId={{.Office}}
 transportMediumTypePreference=goes
 
 #defaultDataSource=
-dataTypeStdPreference={{.DataTypeStandard}}
+dataTypeStdPreference={{.Env.DataTypeStandard}}
 #decwizTimeZone=
 #decwizOutputFormat=
 #decwizDebugLevel=
 #decwizDecodedDataDir=
 #decwizSummaryLog=
 
-dbAuthFile={{.DatabaseAuth}}
+dbAuthFile={{.Env.DatabaseAuth}}
