@@ -22,8 +22,8 @@ type TsdbApp struct {
 	active     bool
 }
 
-func CreateApp(profile Profile, env EnvironmentVars) *TsdbApp {
-	var app = TsdbApp{profile, env.InstallDir, env.UserDir, "decodes.tsdb.ComputationApp",
+func CreateApp(profile Profile, env EnvironmentVars, appClass string) *TsdbApp {
+	var app = TsdbApp{profile, env.InstallDir, env.UserDir, appClass,
 		build_class_path(env.InstallDir, env.UserDir), nil, nil, true}
 	if err := app.Start(); err != nil {
 		panic(err)
@@ -94,6 +94,7 @@ func (app *TsdbApp) Start() error {
 		app.active = false
 		if err != nil {
 			log.Fatalf("App failed with %s", err)
+		}
 	}(app)
 	if err != nil {
 		log.Fatal(err)

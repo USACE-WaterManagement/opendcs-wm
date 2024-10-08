@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	opendcs "github.com/usace-watermanagement/opendcs-watermanagement/appstarter/internal"
@@ -13,6 +14,7 @@ import (
 var profileTemplate string
 
 func main() {
+	appClass := os.Args[1]
 	myenv := opendcs.CurrentEnvironment()
 	fmt.Printf("Type %s\n", myenv.DatabaseType)
 	fmt.Printf("Env -> %s", myenv)
@@ -20,7 +22,7 @@ func main() {
 	fmt.Println(profiles)
 	var apps []*opendcs.TsdbApp
 	for _, profile := range profiles {
-		apps = append(apps, opendcs.CreateApp(profile, myenv))
+		apps = append(apps, opendcs.CreateApp(profile, myenv, appClass))
 
 	}
 
