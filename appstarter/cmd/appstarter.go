@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "embed"
 	"fmt"
 	"log"
 	"os"
@@ -10,15 +9,12 @@ import (
 	opendcs "github.com/usace-watermanagement/opendcs-watermanagement/appstarter/internal"
 )
 
-//go:embed decodes.properties.template
-var profileTemplate string
-
 func main() {
 	appClass := os.Args[1]
 	myenv := opendcs.CurrentEnvironment()
 	fmt.Printf("Type %s\n", myenv.DatabaseType)
 	fmt.Printf("Env -> %s", myenv)
-	profiles := opendcs.GetProfiles(myenv, profileTemplate)
+	profiles := opendcs.GetProfiles(myenv, opendcs.ProfileTemplate)
 	fmt.Println(profiles)
 	var apps []*opendcs.TsdbApp
 	for _, profile := range profiles {

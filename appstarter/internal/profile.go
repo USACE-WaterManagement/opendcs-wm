@@ -1,11 +1,15 @@
 package opendcs
 
 import (
+	_ "embed"
 	"fmt"
 	"log"
 	"os"
 	"text/template"
 )
+
+//go:embed decodes.properties.template
+var ProfileTemplate string
 
 type Profile struct {
 	ProfileFile string
