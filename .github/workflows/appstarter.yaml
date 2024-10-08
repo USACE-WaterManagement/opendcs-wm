@@ -30,7 +30,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build compdepends container
-        run: docker build -t wm/opendcs/compdepends:latest --target=compdepends .
+        run: docker build -t ghcr.io/wm/usace-watermagement/compdepends:latest --target=compdepends .
       - name: Build comproc container
-        run: docker build -t wm/opendcs/compproc:latest --target=compproc .
-      
+        run: docker build -t ghcr.io/usace-watermanagement/opendcs/compproc:latest --target=compproc .
