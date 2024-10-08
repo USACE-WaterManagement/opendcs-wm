@@ -31,5 +31,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build comproc container
         run: docker build -t wm/opendcs/compproc:latest --target=compproc .
-      - name: Build comproc container
+      - name: Build compdepends container
         run: docker build -t wm/opendcs/compdepends:latest --target=compdepends .
