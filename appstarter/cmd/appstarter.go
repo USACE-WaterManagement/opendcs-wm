@@ -25,11 +25,17 @@ func main() {
 	}
 
 	for {
-		for _, appInstance := range apps {
+		for i, appInstance := range apps {
 			if !appInstance.Active() {
 				log.Printf("App %s/%s has died", appInstance.Profile.Office, appInstance.Profile.AppName)
+				apps = append(apps[:i], apps[i+1:]...)
 			}
 		}
-		time.Sleep(5000 * time.Second)
+		fmt.Printf("Have %d apps running", len(apps))
+		if len(apps) == 0 {
+			log.Fatal("All controlled applications have exited.")
+			break
+		}
+		time.Sleep(5 * time.Second)
 	}
 }

@@ -19,11 +19,12 @@ type TsdbApp struct {
 	classPath  string
 	arguments  []string
 	handle     *exec.Cmd
+	active     bool
 }
 
 func CreateApp(profile Profile, env EnvironmentVars) *TsdbApp {
 	var app = TsdbApp{profile, env.InstallDir, env.UserDir, "decodes.tsdb.ComputationApp",
-		build_class_path(env.InstallDir, env.UserDir), nil, nil}
+		build_class_path(env.InstallDir, env.UserDir), nil, nil, true}
 	if err := app.Start(); err != nil {
 		panic(err)
 	}
@@ -52,10 +53,7 @@ func build_class_path(dcsToolHome string, dcsToolUser string) string {
 }
 
 func (app *TsdbApp) Active() bool {
-	if app.handle != nil {
-		return app.handle.Process.Pid != 0
-	}
-	return false
+	return app.active
 }
 
 func (app *TsdbApp) Start() error {
@@ -88,11 +86,15 @@ func (app *TsdbApp) Start() error {
 		panic(err)
 	}
 
-	app.handle.Env = append(os.Environ())
-
 	go redirectPipe(stdout, app, "info")
 	log.Print("Starting application")
 	err = app.handle.Start()
+	go func(app *TsdbApp) {
+		err = app.handle.Wait()
+		app.active = false
+		if err != nil {
+			log.Fatalf("App failed with %s", err)
+	}(app)
 	if err != nil {
 		log.Fatal(err)
 	}
