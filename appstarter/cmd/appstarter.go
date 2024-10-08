@@ -3,39 +3,14 @@ package main
 import (
 	_ "embed"
 	"fmt"
-	"io"
 	"log"
+	"time"
 
 	opendcs "github.com/usace-watermanagement/opendcs-watermanagement/appstarter/internal"
 )
 
 //go:embed decodes.properties.template
 var profileTemplate string
-
-func readLog(app *opendcs.TsdbApp) {
-	stdout, stderr := app.GetOutput()
-
-	for {
-		var err error
-		var buffer []byte
-		_, err = stdout.Read(buffer)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-		}
-
-		log.Printf("{'app': '%s/%s', 'level':'info','msg': '%s'}", app.Profile.Office, app.Profile.AppName, buffer)
-		_, err = stderr.Read(buffer)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-		}
-
-		log.Printf("{'app': '%s/%s', 'level':'error','msg': '%s'}", app.Profile.Office, app.Profile.AppName, buffer)
-	}
-}
 
 func main() {
 	myenv := opendcs.CurrentEnvironment()
@@ -49,20 +24,12 @@ func main() {
 
 	}
 
-	for _, appInstance := range apps {
-		fmt.Printf("App %s/%s", appInstance.Profile.Office, appInstance.Profile.AppName)
-		err := appInstance.Start()
-		if err != nil {
-			log.Fatal(err)
-		}
-		go readLog(appInstance)
-	}
-
 	for {
 		for _, appInstance := range apps {
 			if !appInstance.Active() {
-				log.Printf("App %s/%s as died", appInstance.Profile.Office, appInstance.Profile.AppName)
+				log.Printf("App %s/%s has died", appInstance.Profile.Office, appInstance.Profile.AppName)
 			}
 		}
+		time.Sleep(5000 * time.Second)
 	}
 }

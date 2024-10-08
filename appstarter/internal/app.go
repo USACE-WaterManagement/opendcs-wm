@@ -24,7 +24,9 @@ type TsdbApp struct {
 func CreateApp(profile Profile, env EnvironmentVars) *TsdbApp {
 	var app = TsdbApp{profile, env.InstallDir, env.UserDir, "decodes.tsdb.ComputationApp",
 		build_class_path(env.InstallDir, env.UserDir), nil, nil}
-
+	if err := app.Start(); err != nil {
+		panic(err)
+	}
 	return &app
 }
 
@@ -77,24 +79,37 @@ func (app *TsdbApp) Start() error {
 	if err != nil {
 		panic(err)
 	}
+	log.Printf("Found java at '%s'", javaPath)
 	app.handle = exec.Command(javaPath, fmt.Sprintf("@%s", propsFile.Name()),
 		app.appClass, "-P", app.Profile.ProfileFile, "-d3", "-l", "/dev/stdout")
 
-	err = app.handle.Start()
-	if err == nil {
-		log.Print("App started")
+	stdout, err := app.handle.StdoutPipe()
+	if err != nil {
+		panic(err)
 	}
+	go redirectPipe(stdout, app, "info")
+	log.Print("Starting application")
+	err = app.handle.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print("App started")
 	return err
 }
 
-func (app *TsdbApp) GetOutput() (io.ReadCloser, io.ReadCloser) {
-	outPipe, err := app.handle.StdoutPipe()
-	if err != nil {
-		panic(err)
+func redirectPipe(appPipe io.ReadCloser, app *TsdbApp, level string) {
+
+	buffer := make([]byte, 1024)
+	for {
+
+		n, err := appPipe.Read(buffer)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+		}
+
+		log.Printf("{'app': '%s/%s', 'level':'%s','msg': '%s'}",
+			app.Profile.Office, app.Profile.AppName, level, string(buffer[:n]))
 	}
-	inPipe, err := app.handle.StderrPipe()
-	if err != nil {
-		panic(err)
-	}
-	return outPipe, inPipe
 }
