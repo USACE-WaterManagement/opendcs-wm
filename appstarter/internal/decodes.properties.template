@@ -1,35 +1,35 @@
 # NOTE: This instance is for testing this app, it is not included in the Dockerfile as
 # it already contains an appropriate template file. 
 # The names values starting with OPENDCS_ 
-# are subtitution placeholders for the 
+# are substitution placeholders for the 
 # initial docker run of the particular application
 #
-EditDatabaseType=OPENDCS_DATABASE_TYPE
-EditDatabaseLocation=OPENDCS_DATABASE_URL
+EditDatabaseType={{ .Env.DatabaseType }}
+EditDatabaseLocation={{ .Env.DatabaseUrl }}
 # Settings for the dbedit GUI:
 EditPresentationGroup=SHEF-English
 routingStatusDir=$DCSTOOL_USERDIR/routstat
 
 # Various agency-specific preferences:
-SiteNameTypePreference=OPENDCS_SITE_NAME_PREFERENCE
+SiteNameTypePreference={{.Env.DataTypeStandard}}
 EditTimeZone=UTC
 EditOutputFormat=Human-Readable
 
-jdbcDriverClass=OPENDCS_DATABASE_DRIVER
+jdbcDriverClass={{.Env.DatabaseDriver}}
 
 SqlKeyGenerator=decodes.sql.OracleSequenceKeyGenerator
 sqlDateFormat=yyyy-MM-dd HH\:mm\:ss
 sqlTimeZone=UTC
-dbOfficeId=OPENDCS_CWMS_OFFICE
-CwmsOfficeId=OPENDCS_CWMS_OFFICE
+dbOfficeId={{.Office}}
+CwmsOfficeId={{.Office}}
 transportMediumTypePreference=goes
 
 #defaultDataSource=
-dataTypeStdPreference=OPENDCS_DATATYPE_STANDARD
+dataTypeStdPreference={{.Env.DataTypeStandard}}
 #decwizTimeZone=
 #decwizOutputFormat=
 #decwizDebugLevel=
 #decwizDecodedDataDir=
 #decwizSummaryLog=
 
-dbAuthFile=env-auth-source:username=DATABASE_USERNAME,password=DATABASE_PASSWORD
+dbAuthFile={{.Env.DatabaseAuth}}
