@@ -1,0 +1,5 @@
+[versions]
+opendcs = { strictly = "7.0.13" }
+
+[libraries]
+opendcs = { module = "org.opendcs:opendcs", version.ref="opendcs"}

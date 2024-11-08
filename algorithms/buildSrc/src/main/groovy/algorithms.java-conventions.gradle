@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'    
+    id 'jacoco'
+}
+
+eclipse {
+    classpath {
+       downloadSources=true
+       downloadJavadoc = true
+    }
+}
+
+dependencies {
+    implementation(libs.opendcs)
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+}
+
+
+jacoco {
+    toolVersion = "0.8.9"
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
