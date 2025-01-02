@@ -1,4 +1,4 @@
-ARG VERSION="7.0.13"
+ARG VERSION="7.0-nightly"
 ARG MARKER="a"
 
 # Intermediate container here to build district computations
