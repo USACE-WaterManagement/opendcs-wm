@@ -1,0 +1,31 @@
+plugins {
+    id 'algorithms.deps-conventions'
+    id 'distribution'
+}
+
+
+configurations {
+    swd
+}
+
+dependencies {
+    swd(project(":swd:swt"))
+}
+
+configurations.all {
+    exclude group: "org.opendcs"
+}
+
+
+distributions {
+    main {
+        distributionBaseName = 'district-algorithms'
+        contents {
+            into ("/") {
+                from configurations.swd
+                exclude "**/opendcs*.jar"
+                exclude "**/*slf4j*.jar"
+            }
+        }
+    }
+}
