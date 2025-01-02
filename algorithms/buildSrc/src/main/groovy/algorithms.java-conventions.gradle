@@ -14,7 +14,7 @@ eclipse {
 }
 
 dependencies {
-    implementation(libs.opendcs)
+    implementation(libs.bundles.opendcs)
 }
 
 java {
