@@ -1,0 +1,4 @@
+plugins {
+    id 'algorithms.deps-conventions'
+    id 'algorithms.java-conventions'
+}

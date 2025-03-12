@@ -1,3 +1,10 @@
 build
+**/build
+**/bin
 .vscode
 *.profile
+.settings
+**/.classpath
+**/.project
+**/.idea
+

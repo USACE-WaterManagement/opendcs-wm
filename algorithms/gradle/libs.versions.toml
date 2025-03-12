@@ -1,0 +1,14 @@
+[versions]
+opendcs = { strictly = "7.0.13" }
+slf4j-api= { strictly = "2.0.12" }
+
+[libraries]
+opendcs = { module = "org.opendcs:opendcs", version.ref="opendcs"}
+opendcs-annotations = { module = "org.opendcs:opendcs-annotations", version.ref="opendcs"}
+# This should be a transient dependency brought in by OpenDCS above, at this time the 
+# Project dependencies inside OpenDCS aren't quite right.
+org-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
+
+
+[bundles]
+opendcs = ["opendcs", "opendcs-annotations", "org-slf4j-api"]
