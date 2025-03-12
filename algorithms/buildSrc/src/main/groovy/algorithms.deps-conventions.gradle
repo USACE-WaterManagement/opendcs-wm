@@ -1,4 +1,19 @@
 repositories {
+    maven
+        {
+            url "https://www.hec.usace.army.mil/nexus/repository/maven-public"
+            content
+            {
+                includeGroupByRegex "mil.army.usace.hec.*"
+                includeGroupByRegex "org.jooq.pro"
+                excludeGroup "com.oracle"
+            }
+            metadataSources
+            {
+                mavenPom()
+                artifact()
+            }
+    }
     mavenCentral()
     gradlePluginPortal()
 }

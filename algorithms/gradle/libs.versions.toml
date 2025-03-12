@@ -1,6 +1,11 @@
 [versions]
 opendcs = { strictly = "7.0.13" }
 slf4j-api= { strictly = "2.0.12" }
+cwms-db = "9.3.5"
+cwms-db-codegen = { strictly = "7.0.0-OpenDCS" }
+monolith = { strictly = "2.0.2" }
+cwms-ratings = "1.1.0"
+nucleus = "1.1.1"
 
 [libraries]
 opendcs = { module = "org.opendcs:opendcs", version.ref="opendcs"}
@@ -8,7 +13,17 @@ opendcs-annotations = { module = "org.opendcs:opendcs-annotations", version.ref=
 # This should be a transient dependency brought in by OpenDCS above, at this time the 
 # Project dependencies inside OpenDCS aren't quite right.
 org-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
-
+# CWMS
+cwms-db-jooq = { module = "mil.army.usace.hec:cwms-db-jooq", version.ref = "cwms-db" }
+cwms-db-codegen = { module = "mil.army.usace.hec:cwms-db-jooq-codegen", version.ref = "cwms-db-codegen" }
+cwms-db-aspects = { module = "mil.army.usace.hec:cwms-db-aspects", version.ref = "cwms-db" }
+cwms-db-dao = { module = "mil.army.usace.hec:cwms-db-dao", version.ref = "cwms-db" }
+hec-db-jdbc = { module = "mil.army.usace.hec:hec-db-jdbc", version.ref = "cwms-db" }
+hec-monolith = { module = "mil.army.usace.hec:hec-monolith", version.ref = "monolith" }
+hec-cwms-ratings-core = { module = "mil.army.usace.hec:hec-cwms-ratings-core", version.ref = "cwms-ratings" }
+hec-nucleus-metadata = { module = "mil.army.usace.hec:hec-nucleus-metadata", version.ref = "nucleus" }
 
 [bundles]
 opendcs = ["opendcs", "opendcs-annotations", "org-slf4j-api"]
+cwms-data-access = ["cwms-db-jooq", "cwms-db-codegen", "cwms-db-aspects", "cwms-db-dao",
+                    "hec-db-jdbc", "hec-monolith", "hec-cwms-ratings-core", "hec-nucleus-metadata"]
