@@ -79,7 +79,8 @@ func (app *TsdbApp) Start() error {
 	}
 	log.Printf("Found java at '%s'", javaPath)
 	app.handle = exec.Command(javaPath, fmt.Sprintf("@%s", propsFile.Name()),
-		app.appClass, "-P", app.Profile.ProfileFile, "-d3", "-l", "/dev/stdout")
+		app.appClass, "-P", app.Profile.ProfileFile, "-d3", "-l", "/dev/stdout",
+		"-a", app.Profile.AppName)
 
 	stdout, err := app.handle.StdoutPipe()
 	if err != nil {

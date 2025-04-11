@@ -6,17 +6,19 @@ import (
 )
 
 func TestProfiles(t *testing.T) {
-	env := EnvironmentVars{"XML", "jdbc:test", "noop", "org.opendcs.testing", []string{"SPK", "LRL", "SPA"},
-		"CWMS", "fake", "testApp", "/tmp/installDir", "/tmp/userDir"}
+
+	apps := []string{"testApp","testApp2"}
+	env := EnvironmentVars{"XML", "jdbc:test", "noop", "org.opendcs.testing", "SPK",
+		"CWMS", "fake", apps, "/tmp/installDir", "/tmp/userDir"}
 
 	profiles := GetProfiles(env, ProfileTemplate)
 
-	if len(profiles) != 3 {
+	if len(profiles) != len(apps) {
 		t.Fatalf("Not all profiles created. Only %d", len(profiles))
 	}
 
 	for _, profile := range profiles {
-		if profile.AppName != "testApp" {
+		if profile.Office != "SPK" {
 			t.Fatal("App name not set correctly.")
 		}
 
