@@ -28,6 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+    # TODO: only need 4 fixed name images "api, apps, lrgs, and migration"
+    # apps will cover compdepends, compproc and routing scheduler
       - uses: actions/checkout@v4
       - name: Build compdepends container
         run: docker build -t ghcr.io/wm/usace-watermagement/compdepends:latest --target=compdepends .

@@ -1,4 +1,4 @@
-ARG VERSION="7.5-nightly"
+ARG VERSION="main-nightly"
 ARG MARKER="a"
 
 # Intermediate container here to build district computations
@@ -12,7 +12,7 @@ COPY algorithms /home/gradle/project
 WORKDIR /home/gradle/project
 RUN ./gradlew installDist --info
 
-FROM ghcr.io/opendcs/compproc:${VERSION} AS compproc
+FROM ghcr.io/opendcs/compproc:${VERSION} AS apps
 ARG VERSION
 ARG MARKER
 # Add add in the custom algos
@@ -20,20 +20,15 @@ COPY --from=algo_builder /home/gradle/project/distribution/build/install/distric
 #HEALTHCHECK --interval=2m --timeout=30s --start-period=60s --retries=3 CMD [ "/appstarter", "--check" ]
 COPY --chmod=0555 --from=appstarter_builder /usr/src/app/appstarter /
 ENV IMAGE_MARKER=${MARKER}
-CMD [ "/appstarter", "decodes.tsdb.ComputationApp"]
+ENTRYPOINT ["/appstarter"]
 
-FROM ghcr.io/opendcs/compdepends:${VERSION} AS compdepends
+FROM ghcr.io/opendcs/lrgs:${VERSION} AS lrgs
 ARG VERSION
 ARG MARKER
-##HEALTHCHECK --interval=2m --timeout=30s --start-period=60s --retries=3 CMD [ "/appstarter", "--check" ]
-COPY --chmod=0555 --from=appstarter_builder /usr/src/app/appstarter /
 ENV IMAGE_MARKER=${MARKER}
-CMD [ "/appstarter", "decodes.tsdb.CpCompDependsUpdater"]
+COPY scripts/lrgs-cwbi.sh .
+CMD ["/lrgs-cwbi.sh"]
 
-FROM ghcr.io/opendcs/routingscheduler:${VERSION} AS routingscheduler
-ARG VERSION
-ARG MARKER
-##HEALTHCHECK --interval=2m --timeout=30s --start-period=60s --retries=3 CMD [ "/appstarter", "--check" ]
-COPY --chmod=0555 --from=appstarter_builder /usr/src/app/appstarter /
-ENV IMAGE_MARKER=${MARKER}
-CMD [ "/appstarter", "decodes.routing.RoutingScheduler"]
+
+
+# TODO API - waiting on some verification of the API status
