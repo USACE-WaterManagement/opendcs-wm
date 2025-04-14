@@ -13,9 +13,9 @@ on:
       token:
        required: false
     outputs:
-      app_image:
+      apps_image:
         description: App image tag for downstream consumption
-        value: ${{ jobs.release.outputs.app_image }}
+        value: ${{ jobs.release.outputs.apps_image }}
       lrgs_image:
         description: Lrgs image
         value: ${{ jobs.release.outputs.lrgs_image }}
@@ -40,7 +40,7 @@ jobs:
         packages: write
         contents: write
     outputs:
-      app_image: ${{steps.build_image.outputs.app_image}}
+      apps_image: ${{steps.build_image.outputs.apps_image}}
       lrgs_image: ${{steps.build_image.outputs.lrgs_image}}
     steps:
       - name: checkout code
@@ -75,7 +75,7 @@ jobs:
           docker tag opendcs-apps:build-latest ghcr.io/${REPO}/opendcs-apps:$VERSION
           docker push ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker push ghcr.io/${REPO}/opendcs-apps:$VERSION
-          echo "app_image=ghcr.io/${REPO}/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
+          echo "apps_image=ghcr.io/${REPO}/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
           echo "lrgs_image=ghcr.io/${REPO}/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
       - name: Logout of GH registry
         if: ${{ always() }}
