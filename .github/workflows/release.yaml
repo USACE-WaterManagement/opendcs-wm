@@ -70,7 +70,7 @@ jobs:
           REPO=`echo "${{github.repository}}" | tr  '[:upper:]' '[:lower:]'`
           echo "REPO=$REPO" >> $GITHUB_ENV
           docker build -t opendcs-lrgs:build-latest --target=lrgs .
-          docker build -t opendcs-apps:built-latest --target=apps .
+          docker build -t opendcs-apps:build-latest --target=apps .
           docker tag opendcs-lrgs:build-latest ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker tag opendcs-apps:build-latest ghcr.io/${REPO}/opendcs-apps:$VERSION
           docker push ghcr.io/${REPO}/opendcs-lrgs:$VERSION
