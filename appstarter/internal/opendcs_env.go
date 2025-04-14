@@ -25,10 +25,10 @@ type EnvironmentVars struct {
 	DatabaseUrl      string
 	DatabaseAuth     string
 	DatabaseDriver   string
-	Offices          []string
+	Office           string
 	DataTypeStandard string
 	KeyGenerator     string
-	ApplicationName  string
+	ApplicationNames  []string
 
 	InstallDir string
 	UserDir    string
@@ -44,8 +44,8 @@ func CurrentEnvironment() EnvironmentVars {
 	var databaseDriver = os.Getenv(DATABASE_DRIVER)
 	var datatypeStandard = os.Getenv(DATATYPE_STANDARD)
 	var keyGenerator = os.Getenv(KEY_GENERATOR)
-	var applicationName = os.Getenv(APPLICATION_NAME)
-	var offices = strings.Split(os.Getenv(OFFICE), ",")
+	var applicationNames = strings.Split(os.Getenv(APPLICATION_NAME), ",")
+	var office = os.Getenv(OFFICE)
 
 	var installDirStr = os.Getenv(DCSTOOL_HOME)
 	var userDirStr = os.Getenv(USERDIR)
@@ -57,6 +57,6 @@ func CurrentEnvironment() EnvironmentVars {
 	}
 
 	ret := EnvironmentVars{databaseType, databaseUrl, databaseAuth, databaseDriver,
-		offices, datatypeStandard, keyGenerator, applicationName, installDirStr, userDirStr}
+		office, datatypeStandard, keyGenerator, applicationNames, installDirStr, userDirStr}
 	return ret
 }

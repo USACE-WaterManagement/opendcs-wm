@@ -30,8 +30,9 @@ func GetProfiles(environment EnvironmentVars, profileTemplate string) []Profile 
 		panic(err)
 	}
 
-	for _, office := range environment.Offices {
-		var profileFile = fmt.Sprintf("%s.profile", office)
+	for _, app := range environment.ApplicationNames {
+		var office = environment.Office
+		var profileFile = fmt.Sprintf("%s.profile", app)
 		file, err := os.OpenFile(profileFile, os.O_RDWR|os.O_CREATE, 0644)
 		if err != nil {
 			log.Fatal(err)
@@ -41,7 +42,7 @@ func GetProfiles(environment EnvironmentVars, profileTemplate string) []Profile 
 		if err != nil {
 			panic(err)
 		}
-		ret = append(ret, Profile{profileFile, environment.ApplicationName, office})
+		ret = append(ret, Profile{profileFile, app, office})
 
 		if err := file.Close(); err != nil {
 			log.Fatal(err)

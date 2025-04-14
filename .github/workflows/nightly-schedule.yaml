@@ -1,0 +1,32 @@
+name: Nightly Releases - Schedule
+on:
+  schedule:
+    - cron: "3 0 * * *"
+  workflow_dispatch:    
+
+jobs:
+  cwbi-dev:
+    permissions:
+      packages: write
+      contents: write
+    uses: ./.github/workflows/release.yaml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      branch: "cwbi-dev"
+      nightly: true
+  # Deploy CDA nightly. Keeps everyone on their toes with new updates and keeps the containers 
+  # Updated
+  deploy-dev:
+    permissions:
+      id-token: write
+      contents: read
+    needs: cwbi-dev
+    uses: ./.github/workflows/deploy.yaml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      app_image: ${{needs.cwbi-dev.outputs.app_image}}
+      lrgs_image: ${{needs.cwbi-dev.outputs.lrgs_image}}
+      region: us-gov-west-1
+      iam_role: arn:aws-us-gov:iam::718787032875:role/github-actions-ecr-cwms-opendcs
