@@ -6,7 +6,7 @@ if [ ! -d $LRGSHOME/netlist ]; then
     cp -r $DCSTOOL_HOME/netlist .
 
 # Generate Config
-cat >> $LRGSHOME/lrgs.conf <<EOF
+cat > $LRGSHOME/lrgs.conf <<EOF
 archiveDir: "$LRGS_ARCHIVE"
 numDayFiles: 31
 ddsRecvConfig: "${LRGSHOME}/ddsrecv.conf"
@@ -19,9 +19,10 @@ ddsRequireAuth: true
 noTimeout: true
 $EXTRA_CONFIG
 EOF
+fi
 
 # Setup users
-    if [ "$NOAACDA_USERNAME" != "" ]; then
+if [ "$NOAACDA_USERNAME" != "" ]; then
     cat <<EOF | editPasswd
 adduser $NOAACDA_USERNAME
 $NOAACDA_PASSWORD

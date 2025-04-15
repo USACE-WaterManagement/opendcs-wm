@@ -26,7 +26,7 @@ FROM ghcr.io/opendcs/lrgs:${VERSION} AS lrgs
 ARG VERSION
 ARG MARKER
 ENV IMAGE_MARKER=${MARKER}
-COPY scripts/lrgs-cwbi.sh .
+COPY --chmod=0555 scripts/lrgs-cwbi.sh /
 CMD ["/lrgs-cwbi.sh"]
 
 

@@ -25,6 +25,7 @@ jobs:
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read # This is required for actions/checkout
+      packages: read # required to pull image
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -41,13 +42,23 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           mask-password: 'true'
+      - name: Log in to the Container registry
+        id: login-ghcr
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.token != null && secrets.token || secrets.GITHUB_TOKEN }}
+      - name: Get images
+        run: |
+          docker pull ${{inputs.apps_image}}
+          docker pull ${{inputs.lrgs_image}}
       - name: Push Apps Image to ECR Repo
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: cwms-wmes-opendcs-apps
           IMAGE_TAG: latest
         run: |
-          docker pull ${{inputs.apps_image}}
           docker tag ${{inputs.apps_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag ${{inputs.apps_image}} $ECR_REGISTRY/$ECR_REPOSITORY:dev 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -58,7 +69,7 @@ jobs:
           ECR_REPOSITORY: cwms-wmes-opendcs-lrgs
           IMAGE_TAG: latest
         run: |
-          docker pull ${{inputs.lrgs_image}}
+          
           docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:dev 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
