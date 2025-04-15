@@ -7,7 +7,7 @@ if [ ! -d $LRGSHOME/netlist ]; then
 
 # Generate Config
 cat > $LRGSHOME/lrgs.conf <<EOF
-archiveDir: "$LRGS_ARCHIVE"
+archiveDir: "${LRGS_ARCHIVE}"
 numDayFiles: 31
 ddsRecvConfig: "${LRGSHOME}/ddsrecv.conf"
 enableDrgsRecv: false
@@ -35,7 +35,7 @@ EOF
     echo "enableDdsRecv=true" >> $LRGSHOME/lrgs.conf
 fi
 
-cat <<EOF | editPasswd
+script -c editPasswd <<EOF
 adduser $ROUTING_USERNAME
 $ROUTING_PASSWORD
 $ROUTING_PASSWORD
