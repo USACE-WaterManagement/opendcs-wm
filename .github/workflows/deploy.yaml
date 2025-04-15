@@ -25,7 +25,7 @@ jobs:
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read # This is required for actions/checkout
-      package: read # required to pull image
+      packages: read # required to pull image
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
