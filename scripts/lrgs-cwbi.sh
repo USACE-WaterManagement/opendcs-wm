@@ -7,7 +7,7 @@ if [ ! -d $LRGSHOME/netlist ]; then
 
 # Generate Config
 cat > $LRGSHOME/lrgs.conf <<EOF
-archiveDir: "${LRGS_ARCHIVE}"
+archiveDir: ${LRGS_ARCHIVE}
 numDayFiles: 31
 ddsRecvConfig: "${LRGSHOME}/ddsrecv.conf"
 enableDrgsRecv: false
