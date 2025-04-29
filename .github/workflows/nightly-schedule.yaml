@@ -29,5 +29,6 @@ jobs:
     with:
       apps_image: ${{needs.cwbi-dev.outputs.apps_image}}
       lrgs_image: ${{needs.cwbi-dev.outputs.lrgs_image}}
+      migration_image: ${{needs.cwbi-dev.outputs.migration_image}}
       region: us-gov-west-1
       iam_role: arn:aws-us-gov:iam::718787032875:role/github-actions-ecr-cwms-opendcs
