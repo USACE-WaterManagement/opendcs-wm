@@ -15,7 +15,7 @@ jobs:
     with:
       branch: "cwbi-dev"
       nightly: true
-  # Deploy CDA nightly. Keeps everyone on their toes with new updates and keeps the containers 
+  # Deploy OpenDCS nightly. Keeps everyone on their toes with new updates and keeps the containers 
   # Updated
   deploy-dev:
     permissions:
