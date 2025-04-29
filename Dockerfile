@@ -1,5 +1,5 @@
 ARG VERSION="main-nightly"
-ARG MARKER="a"
+ARG MARKER="b"
 
 # Intermediate container here to build district computations
 FROM golang:1.24.2 AS appstarter_builder
