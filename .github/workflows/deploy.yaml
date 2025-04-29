@@ -9,6 +9,9 @@ on:
       apps_image:
         type: string
         required: true
+      migration_image:
+        type: string
+        required: true
       region:
         type: string
         required: true
@@ -72,6 +75,17 @@ jobs:
           
           docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:dev 
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:dev
+      - name: Push Migration Image to ECR Repo
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: cwms-wmes-opendcs-migration
+          IMAGE_TAG: latest
+        run: |
+          
+          docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:dev 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:dev
       - name: ECR Logout
