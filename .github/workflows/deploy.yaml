@@ -56,6 +56,7 @@ jobs:
         run: |
           docker pull ${{inputs.apps_image}}
           docker pull ${{inputs.lrgs_image}}
+          docker pull ${{inputs.migration_image}}
       - name: Push Apps Image to ECR Repo
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
