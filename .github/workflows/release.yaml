@@ -19,6 +19,9 @@ on:
       lrgs_image:
         description: Lrgs image
         value: ${{ jobs.release.outputs.lrgs_image }}
+      migration_image:
+        description: Database Migration image
+        value: ${{ jobs.release.outputs.migration_image }}
   workflow_dispatch:
     inputs:
       branch:
@@ -42,6 +45,7 @@ jobs:
     outputs:
       apps_image: ${{steps.build_image.outputs.apps_image}}
       lrgs_image: ${{steps.build_image.outputs.lrgs_image}}
+      migration_image: ${{steps.build_image.outputs.migration_image}}
     steps:
       - name: checkout code
         uses: actions/checkout@v4.2.2
@@ -71,12 +75,16 @@ jobs:
           echo "REPO=$REPO" >> $GITHUB_ENV
           docker build -t opendcs-lrgs:build-latest --target=lrgs .
           docker build -t opendcs-apps:build-latest --target=apps .
+          docker build -t opendcs-migration:build-latest --target=migration .
           docker tag opendcs-lrgs:build-latest ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker tag opendcs-apps:build-latest ghcr.io/${REPO}/opendcs-apps:$VERSION
+          docker tag opendcs-migration:build-latest ghcr.io/${REPO}/opendcs-migration:$VERSION
           docker push ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker push ghcr.io/${REPO}/opendcs-apps:$VERSION
+          docker push ghcr.io/${REPO}/opendcs-migration:$VERSION
           echo "apps_image=ghcr.io/${REPO}/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
           echo "lrgs_image=ghcr.io/${REPO}/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
+          echo "migration_image=ghcr.io/${REPO}/opendcs-migration:$VERSION" >> $GITHUB_OUTPUT
       - name: Logout of GH registry
         if: ${{ always() }}
         run: |

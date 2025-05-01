@@ -1,5 +1,5 @@
 ARG VERSION="main-nightly"
-ARG MARKER="a"
+ARG MARKER="b"
 
 # Intermediate container here to build district computations
 FROM golang:1.24.2 AS appstarter_builder
@@ -29,6 +29,15 @@ ENV IMAGE_MARKER=${MARKER}
 COPY --chmod=0555 scripts/lrgs-cwbi.sh /
 CMD ["/lrgs-cwbi.sh"]
 
-
+FROM ghcr.io/opendcs/compproc:${VERSION} AS migration
+ARG VERSION
+ARG MARKER
+USER root
+RUN apk add --no-cache util-linux
+ENV IMAGE_MARKER=${MARKER}
+COPY --chmod=0555 scripts/migrate.sh /
+USER opendcs:opendcs
+WORKDIR /dcs_user_dir
+CMD ["/migrate.sh"]
 
 # TODO API - waiting on some verification of the API status
