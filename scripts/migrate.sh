@@ -3,7 +3,7 @@
 export DATABASE_URL=$JDBC_URL
 export CWMS_OFFICE=LRL
 export DATABASE_TYPE=CWMS
-export DATABASE_DRIVE="oracle.jdbc.driver.OracleDriver"
+export DATABASE_DRIVER="oracle.jdbc.driver.OracleDriver"
 export DATATYPE_STANDARD="CWMS"
 export KEYGENERATOR="decodes.sql.OracleSequenceKeyGenerator"
 
