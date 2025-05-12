@@ -20,6 +20,6 @@ exec manageDatabase -I ${OPENDCS_IMPLEMENTATION} \
                -DCCP_SCHEMA=CCP \
                -DDEFAULT_OFFICE=HQ \
                -DDEFAULT_OFFICE_CODE=1 \
-               -DTABLES_SPACE_SPEC="" \
+               -DTABLE_SPACE_SPEC= \
                -appUsername "${DCS_USERNAME}" \
                -appPassword "${DCS_PASSWORD}"
