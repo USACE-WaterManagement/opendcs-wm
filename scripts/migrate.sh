@@ -8,18 +8,18 @@ export DATATYPE_STANDARD="CWMS"
 export KEYGENERATOR="decodes.sql.OracleSequenceKeyGenerator"
 
 source /opt/opendcs/tsdb_config.sh
-
+echo "***** GENERATED PROPERTIES FILE *****"
 cat /dcs_user_dir/user.properties
+echo "***** END ENERATED PROPERTIES FILE *****"
 
-script -c "manageDatabase -I ${OPENDCS_IMPLEMENTATION} -P /dcs_user_dir/user.properties" <<EOF
-${FLYWAY_USERNAME}
-${FLYWAY_PASSWORD}
-CWMS_20
-CCP
-1
-HQ
-
-${DATABASE_USERNAME}
-${DATABASE_PASSWORD}
-${DATABASE_PASSWORD}
-EOF
+exec manageDatabase -I ${OPENDCS_IMPLEMENTATION} \
+               -P /dcs_user_dir/user.properties \
+               -username ${FLYWAY_USERNAME} \
+               -password ${FLYWAY_PASSWORD} \
+               -DCWMS_SCHEMA=CWMS_20 \
+               -DCCP_SCHEMA=CCP \
+               -DDEFAULT_OFFICE=HQ \
+               -DDEFAULT_OFFICE_CODE=1 \
+               -DTABLES_SPACE_SPEC="" \
+               -appUserName="${DATABASE_USERNAME}" \
+               -appUserName="${DATABASE_PASSWORD}"
