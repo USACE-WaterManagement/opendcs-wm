@@ -21,5 +21,5 @@ exec manageDatabase -I ${OPENDCS_IMPLEMENTATION} \
                -DDEFAULT_OFFICE=HQ \
                -DDEFAULT_OFFICE_CODE=1 \
                -DTABLES_SPACE_SPEC="" \
-               -appUserName="${DATABASE_USERNAME}" \
-               -appUserName="${DATABASE_PASSWORD}"
+               -appUserName "${DATABASE_USERNAME}" \
+               -appUserName "${DATABASE_PASSWORD}"
