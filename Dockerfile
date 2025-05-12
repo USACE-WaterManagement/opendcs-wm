@@ -1,13 +1,13 @@
 ARG VERSION="main-nightly"
-ARG MARKER="b"
+ARG MARKER="a"
 
 # Intermediate container here to build district computations
-FROM golang:1.24.2 AS appstarter_builder
+FROM golang:1.24.3 AS appstarter_builder
 WORKDIR /usr/src/app
 COPY appstarter/ ./
 RUN go build cmd/appstarter.go
 
-FROM gradle:8.13-jdk AS algo_builder
+FROM gradle:8.14-jdk AS algo_builder
 COPY algorithms /home/gradle/project
 WORKDIR /home/gradle/project
 RUN ./gradlew installDist --info
