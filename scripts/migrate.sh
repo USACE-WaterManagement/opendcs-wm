@@ -18,8 +18,8 @@ exec manageDatabase -I ${OPENDCS_IMPLEMENTATION} \
                -password ${FLYWAY_PASSWORD} \
                -DCWMS_SCHEMA=CWMS_20 \
                -DCCP_SCHEMA=CCP \
-               -DDEFAULT_OFFICE=HQ \
-               -DDEFAULT_OFFICE_CODE=1 \
+               -DDEFAULT_OFFICE=LRL \
+               -DDEFAULT_OFFICE_CODE=9 \
                -DTABLE_SPACE_SPEC= \
                -appUsername "${DCS_USERNAME}" \
                -appPassword "${DCS_PASSWORD}"
