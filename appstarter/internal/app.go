@@ -87,9 +87,19 @@ func (app *TsdbApp) Start() error {
 		panic(err)
 	}
 
+	stderr, err := app.handle.StderrPipe()
+	if err != nil {
+		panic(err)
+	}
+
 	go redirectPipe(stdout, app, "info")
+	go redirectPipe(stderr, app, "error")
 	log.Print("Starting application")
 	err = app.handle.Start()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
 	go func(app *TsdbApp) {
 		err = app.handle.Wait()
 		app.active = false
@@ -97,9 +107,7 @@ func (app *TsdbApp) Start() error {
 			log.Fatalf("App failed with %s", err)
 		}
 	}(app)
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	log.Print("App started")
 	return err
 }
