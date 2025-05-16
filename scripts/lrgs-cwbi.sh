@@ -1,13 +1,15 @@
 #!/bin/bash
 
-if [ ! -d $LRGSHOME/netlist ]; then
-    echo "Generating initial LRGS HOME Directory."
-    cp -r $DCSTOOL_HOME/users .
-    cp -r $DCSTOOL_HOME/netlist .
+# Always rebuild
+rm -rf ${DCSTOOL_HOME}/users
+cp -r $DCSTOOL_HOME/users .
 
-# Generate Config
+rm -rf ${DCSTOOL_HOME}/netlist
+cp -r $DCSTOOL_HOME/netlist .
+
+#  Always generate Generate Config
 cat > $LRGSHOME/lrgs.conf <<EOF
-archiveDir: "$LRGS_ARCHIVE"
+archiveDir: ${LRGS_ARCHIVE}
 numDayFiles: 31
 ddsRecvConfig: "${LRGSHOME}/ddsrecv.conf"
 enableDrgsRecv: false
@@ -19,7 +21,8 @@ ddsRequireAuth: true
 noTimeout: true
 $EXTRA_CONFIG
 EOF
-fi
+
+rm -f ${LRGSHOME}/.lrgs.passwd
 
 # Setup users
 if [ "$NOAACDA_USERNAME" != "" ]; then
@@ -35,7 +38,7 @@ EOF
     echo "enableDdsRecv=true" >> $LRGSHOME/lrgs.conf
 fi
 
-cat <<EOF | editPasswd
+script -c editPasswd <<EOF
 adduser $ROUTING_USERNAME
 $ROUTING_PASSWORD
 $ROUTING_PASSWORD
