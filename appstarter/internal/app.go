@@ -1,6 +1,7 @@
 package opendcs
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
@@ -112,6 +113,12 @@ func (app *TsdbApp) Start() error {
 	return err
 }
 
+type LogMessage struct {
+	App   string `json:"app"`
+	Level string `json:"level"`
+	Msg   string `json:"msg"`
+}
+
 func redirectPipe(appPipe io.ReadCloser, app *TsdbApp, level string) {
 
 	buffer := make([]byte, 1024)
@@ -123,8 +130,15 @@ func redirectPipe(appPipe io.ReadCloser, app *TsdbApp, level string) {
 				break
 			}
 		}
-
-		log.Printf("{'app': '%s/%s', 'level':'%s','msg': '%s'}",
-			app.Profile.Office, app.Profile.AppName, level, string(buffer[:n]))
+		msg := LogMessage{
+			App:   fmt.Sprintf("%s/%s", app.Profile.Office, app.Profile.AppName),
+			Level: level,
+			Msg:   string(buffer[:n]),
+		}
+		out, err := json.Marshal(msg)
+		if err != nil {
+			log.Println("Error creating log message", err)
+		}
+		log.Writer().Write(out)
 	}
 }
