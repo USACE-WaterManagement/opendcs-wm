@@ -19,6 +19,7 @@ ARG MARKER
 COPY --from=algo_builder /home/gradle/project/distribution/build/install/district-algorithms/ /dcs_user_dir/dep/
 #HEALTHCHECK --interval=2m --timeout=30s --start-period=60s --retries=3 CMD [ "/appstarter", "--check" ]
 COPY --chmod=0555 --from=appstarter_builder /usr/src/app/appstarter /
+COPY scripts/logfilter.txt /dcs_user_dir/
 ENV IMAGE_MARKER=${MARKER}
 ENTRYPOINT ["/appstarter"]
 
