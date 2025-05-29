@@ -24,6 +24,8 @@ EOF
 
 rm -f ${LRGSHOME}/.lrgs.passwd
 
+index=0
+echo "<ddsrecv>" > ${LRGSHOME}/ddsrecv.conf
 # Setup users
 if [ "$NOAACDA_USERNAME" != "" ]; then
     cat <<EOF | editPasswd
@@ -36,7 +38,38 @@ quit
 EOF
     # TODO: add ddsrecv.xml elements
     echo "enableDdsRecv=true" >> $LRGSHOME/lrgs.conf
+
+    cat <<EOF >> ${LRGSHOME}/ddsrecv.conf
+  <connection number="$index" host="cdadata.wcds.noaa.gov">
+		<name>NOAA CDADTA</name>
+		<port>16003</port>
+		<enabled>true</enabled>
+    <use-tls>TLS</use-tls>
+		<username>${NOAACDA_USERNAME}</username>
+		<authenticate>true</authenticate>
+	</connection>
+EOF
+  index=$((index+1))
 fi
+
+script -c editPasswd <<EOF
+adduser anonymous
+anonymous
+anonymous
+anonymous
+write
+quit
+EOF
+cat <<EOF >> $LRGSHOME/ddsrecv.conf
+<connection number="$index" host="lrgs.opendcs.org">
+		<name>OpenDCS Public LRGS</name>
+		<port>16003</port>
+		<enabled>true</enabled>
+		<username>anonymous</username>
+		<authenticate>true</authenticate>
+	</connection>
+EOF
+echo "</ddsrecv>" >> $LRGSHOME/ddsrecv.conf
 
 script -c editPasswd <<EOF
 adduser $ROUTING_USERNAME
@@ -46,6 +79,7 @@ addrole $ROUTING_USERNAME dds
 write
 quit
 EOF
+
 
 # Create user directories.
 for user in `cat $LRGSHOME/.lrgs.passwd | cut -d : -f 1 -s`
