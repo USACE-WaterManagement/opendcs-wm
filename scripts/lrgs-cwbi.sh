@@ -26,7 +26,7 @@ EOF
 rm -f ${LRGSHOME}/.lrgs.passwd
 
 index=0
-echo "<ddsrecv>" > ${LRGSHOME}/ddsrecv.conf
+echo "<ddsrecvconf>" > ${LRGSHOME}/ddsrecv.conf
 # Setup users
 if [ "$NOAACDA_USERNAME" != "" ]; then
     cat <<EOF | editPasswd
@@ -67,7 +67,7 @@ cat <<EOF >> $LRGSHOME/ddsrecv.conf
 		<authenticate>true</authenticate>
 	</connection>
 EOF
-echo "</ddsrecv>" >> $LRGSHOME/ddsrecv.conf
+echo "</ddsrecvconf>" >> $LRGSHOME/ddsrecv.conf
 
 script -c editPasswd <<EOF
 adduser $ROUTING_USERNAME
