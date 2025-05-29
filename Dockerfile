@@ -27,6 +27,9 @@ FROM ghcr.io/opendcs/lrgs:${VERSION} AS lrgs
 ARG VERSION
 ARG MARKER
 ENV IMAGE_MARKER=${MARKER}
+USER root
+RUN apk add --no-cache util-linux
+USER opendcs
 COPY --chmod=0555 scripts/lrgs-cwbi.sh /
 CMD ["/lrgs-cwbi.sh"]
 
