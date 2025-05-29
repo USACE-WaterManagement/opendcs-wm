@@ -55,7 +55,6 @@ script -c editPasswd <<EOF
 adduser anonymous
 anonymous
 anonymous
-anonymous
 write
 quit
 EOF
