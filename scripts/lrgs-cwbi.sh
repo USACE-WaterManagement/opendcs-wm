@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Always rebuild
-rm -rf ${DCSTOOL_HOME}/users
-cp -r $DCSTOOL_HOME/users .
+rm -rf ${LRGSHOME}/users
+cp -r $DCSTOOL_HOME/lrgs/users .
 
-rm -rf ${DCSTOOL_HOME}/netlist
-cp -r $DCSTOOL_HOME/netlist .
+rm -rf ${LRGSHOME}/netlist
+cp -r $DCSTOOL_HOME/lrgs/netlist .
 
 #  Always generate Generate Config
 cat > $LRGSHOME/lrgs.conf <<EOF
