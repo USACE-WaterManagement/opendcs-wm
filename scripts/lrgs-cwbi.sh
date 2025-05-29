@@ -11,9 +11,10 @@ cp -r $DCSTOOL_HOME/netlist .
 cat > $LRGSHOME/lrgs.conf <<EOF
 archiveDir: ${LRGS_ARCHIVE}
 numDayFiles: 31
-ddsRecvConfig: "${LRGSHOME}/ddsrecv.conf"
+ddsRecvConfig: ${LRGSHOME}/ddsrecv.conf
+enableDdsRecv=true
 enableDrgsRecv: false
-drgsRecvConfig: "${LRGSHOME}/drgsconf.xml"
+drgsRecvConfig: ${LRGSHOME}/drgsconf.xml
 htmlStatusSeconds: 10
 ddsListenPort: 16003
 ddsRequireAuth: true
@@ -35,9 +36,7 @@ $NOAACDA_PASSWORD
 addrole $NOAACDA_USERNAME dds
 write
 quit
-EOF
-    # TODO: add ddsrecv.xml elements
-    echo "enableDdsRecv=true" >> $LRGSHOME/lrgs.conf
+EO    
 
     cat <<EOF >> ${LRGSHOME}/ddsrecv.conf
   <connection number="$index" host="cdadata.wcds.noaa.gov">
