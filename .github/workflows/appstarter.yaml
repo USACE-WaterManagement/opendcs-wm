@@ -5,9 +5,11 @@ on:
   push:
     branches:
       - main
+      - cwbi-dev
   pull_request:
     branches:
       - main
+      - cwbi-dev
 
 jobs:
   test:
