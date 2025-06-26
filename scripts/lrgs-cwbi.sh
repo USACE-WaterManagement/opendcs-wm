@@ -1,17 +1,20 @@
 #!/bin/bash
 
-if [ ! -d $LRGSHOME/netlist ]; then
-    echo "Generating initial LRGS HOME Directory."
-    cp -r $DCSTOOL_HOME/users .
-    cp -r $DCSTOOL_HOME/netlist .
+# Always rebuild
+rm -rf ${LRGSHOME}/users
+cp -r $DCSTOOL_HOME/lrgs/users .
 
-# Generate Config
+rm -rf ${LRGSHOME}/netlist
+cp -r $DCSTOOL_HOME/lrgs/netlist .
+
+#  Always generate Generate Config
 cat > $LRGSHOME/lrgs.conf <<EOF
-archiveDir: "$LRGS_ARCHIVE"
+archiveDir: ${LRGS_ARCHIVE}
 numDayFiles: 31
-ddsRecvConfig: "${LRGSHOME}/ddsrecv.conf"
+ddsRecvConfig: ${LRGSHOME}/ddsrecv.conf
+enableDdsRecv=true
 enableDrgsRecv: false
-drgsRecvConfig: "${LRGSHOME}/drgsconf.xml"
+drgsRecvConfig: ${LRGSHOME}/drgsconf.xml
 htmlStatusSeconds: 10
 ddsListenPort: 16003
 ddsRequireAuth: true
@@ -19,11 +22,14 @@ ddsRequireAuth: true
 noTimeout: true
 $EXTRA_CONFIG
 EOF
-fi
 
+rm -f ${LRGSHOME}/.lrgs.passwd
+
+index=0
+echo "<ddsrecvconf>" > ${LRGSHOME}/ddsrecv.conf
 # Setup users
 if [ "$NOAACDA_USERNAME" != "" ]; then
-    cat <<EOF | editPasswd
+    editPasswd <<EOF
 adduser $NOAACDA_USERNAME
 $NOAACDA_PASSWORD
 $NOAACDA_PASSWORD
@@ -31,11 +37,40 @@ addrole $NOAACDA_USERNAME dds
 write
 quit
 EOF
-    # TODO: add ddsrecv.xml elements
-    echo "enableDdsRecv=true" >> $LRGSHOME/lrgs.conf
+
+    cat <<EOF >> ${LRGSHOME}/ddsrecv.conf
+  <connection number="$index" host="cdadata.wcds.noaa.gov">
+		<name>NOAA CDADTA</name>
+		<port>16003</port>
+		<enabled>true</enabled>
+    <use-tls>TLS</use-tls>
+		<username>${NOAACDA_USERNAME}</username>
+		<authenticate>true</authenticate>
+	</connection>
+EOF
+  index=$((index+1))
 fi
 
-cat <<EOF | editPasswd
+editPasswd <<EOF
+adduser anonymous
+anonymous
+anonymous
+write
+quit
+EOF
+
+cat <<EOF >> $LRGSHOME/ddsrecv.conf
+<connection number="$index" host="lrgs.opendcs.org">
+		<name>OpenDCS Public LRGS</name>
+		<port>16003</port>
+		<enabled>true</enabled>
+		<username>anonymous</username>
+		<authenticate>true</authenticate>
+	</connection>
+EOF
+echo "</ddsrecvconf>" >> $LRGSHOME/ddsrecv.conf
+
+editPasswd <<EOF
 adduser $ROUTING_USERNAME
 $ROUTING_PASSWORD
 $ROUTING_PASSWORD
@@ -43,6 +78,7 @@ addrole $ROUTING_USERNAME dds
 write
 quit
 EOF
+
 
 # Create user directories.
 for user in `cat $LRGSHOME/.lrgs.passwd | cut -d : -f 1 -s`

@@ -1,2 +1,0 @@
-add_library(optionparser INTERFACE optionparser.hpp)
-target_include_directories(optionparser INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
