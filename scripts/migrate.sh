@@ -10,7 +10,7 @@ export KEYGENERATOR="decodes.sql.OracleSequenceKeyGenerator"
 source /opt/opendcs/tsdb_config.sh
 echo "***** GENERATED PROPERTIES FILE *****"
 cat /dcs_user_dir/user.properties
-echo "***** END ENERATED PROPERTIES FILE *****"
+echo "***** END GENERATED PROPERTIES FILE *****"
 
 exec manageDatabase -I ${OPENDCS_IMPLEMENTATION} \
                -P /dcs_user_dir/user.properties \
