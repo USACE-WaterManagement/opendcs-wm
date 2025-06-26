@@ -29,14 +29,14 @@ index=0
 echo "<ddsrecvconf>" > ${LRGSHOME}/ddsrecv.conf
 # Setup users
 if [ "$NOAACDA_USERNAME" != "" ]; then
-    cat <<EOF | editPasswd
+    editPasswd <<EOF
 adduser $NOAACDA_USERNAME
 $NOAACDA_PASSWORD
 $NOAACDA_PASSWORD
 addrole $NOAACDA_USERNAME dds
 write
 quit
-EO    
+EOF
 
     cat <<EOF >> ${LRGSHOME}/ddsrecv.conf
   <connection number="$index" host="cdadata.wcds.noaa.gov">
@@ -51,13 +51,14 @@ EOF
   index=$((index+1))
 fi
 
-script -c editPasswd <<EOF
+editPasswd <<EOF
 adduser anonymous
 anonymous
 anonymous
 write
 quit
 EOF
+
 cat <<EOF >> $LRGSHOME/ddsrecv.conf
 <connection number="$index" host="lrgs.opendcs.org">
 		<name>OpenDCS Public LRGS</name>
@@ -69,7 +70,7 @@ cat <<EOF >> $LRGSHOME/ddsrecv.conf
 EOF
 echo "</ddsrecvconf>" >> $LRGSHOME/ddsrecv.conf
 
-script -c editPasswd <<EOF
+editPasswd <<EOF
 adduser $ROUTING_USERNAME
 $ROUTING_PASSWORD
 $ROUTING_PASSWORD
