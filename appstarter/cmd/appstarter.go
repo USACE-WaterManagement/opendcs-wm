@@ -29,7 +29,7 @@ func main() {
 				apps = append(apps[:i], apps[i+1:]...)
 			}
 		}
-		fmt.Printf("Have %d apps running", len(apps))
+		log.Printf("Have %d apps running\n", len(apps))
 		if len(apps) == 0 {
 			log.Fatal("All controlled applications have exited.")
 			break

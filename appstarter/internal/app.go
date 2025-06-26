@@ -1,6 +1,7 @@
 package opendcs
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -57,6 +58,12 @@ func (app *TsdbApp) Active() bool {
 	return app.active
 }
 
+type LogMessage struct {
+	App   string `json:"app"`
+	Level string `json:"level"`
+	Msg   string `json:"msg"`
+}
+
 func (app *TsdbApp) Start() error {
 	var err error
 	propsFile, err := os.OpenFile(fmt.Sprintf("args-%s-%s", app.Profile.Office, app.Profile.AppName),
@@ -95,7 +102,7 @@ func (app *TsdbApp) Start() error {
 
 	go redirectPipe(stdout, app, "info")
 	go redirectPipe(stderr, app, "error")
-	log.Print("Starting application")
+	log_message("info", app.Profile.AppName, app.Profile.Office, "Starting application")
 	err = app.handle.Start()
 	if err != nil {
 		log.Fatal(err)
@@ -113,32 +120,25 @@ func (app *TsdbApp) Start() error {
 	return err
 }
 
-type LogMessage struct {
-	App   string `json:"app"`
-	Level string `json:"level"`
-	Msg   string `json:"msg"`
+func redirectPipe(appPipe io.ReadCloser, app *TsdbApp, level string) {
+	//from: https://stackoverflow.com/a/25191479
+	// original reader was getting stuck
+	buffer := bufio.NewScanner(appPipe)
+	for buffer.Scan() {
+		log_message(level, app.Profile.AppName, app.Profile.Office, buffer.Text())
+	}
+	log_message(level, app.Profile.AppName, app.Profile.Office, "Log output terminated.")
 }
 
-func redirectPipe(appPipe io.ReadCloser, app *TsdbApp, level string) {
-
-	buffer := make([]byte, 1024)
-	for {
-
-		n, err := appPipe.Read(buffer)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-		}
-		msg := LogMessage{
-			App:   fmt.Sprintf("%s/%s", app.Profile.Office, app.Profile.AppName),
-			Level: level,
-			Msg:   string(buffer[:n]),
-		}
-		out, err := json.Marshal(msg)
-		if err != nil {
-			log.Println("Error creating log message", err)
-		}
-		log.Writer().Write(out)
+func log_message(level string, app string, office string, log_msg string) {
+	msg := LogMessage{
+		App:   fmt.Sprintf("%s/%s", office, app),
+		Level: level,
+		Msg:   log_msg,
 	}
+	out, err := json.Marshal(msg)
+	if err != nil {
+		log.Println("Error creating log message", err)
+	}
+	log.Println(string(out))
 }
