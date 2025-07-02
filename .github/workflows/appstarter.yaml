@@ -33,7 +33,9 @@ jobs:
     # TODO: only need 4 fixed name images "api, apps, lrgs, and migration"
     # apps will cover compdepends, compproc and routing scheduler
       - uses: actions/checkout@v4
-      - name: Build compdepends container
+      - name: Build apps container
         run: docker build -t ghcr.io/wm/usace-watermagement/compdepends:latest --target=apps .
-      - name: Build comproc container
-        run: docker build -t ghcr.io/usace-watermanagement/opendcs/compproc:latest --target=lrgs .
+      - name: Build lrgs container
+        run: docker build -t ghcr.io/usace-watermanagement/opendcs/lrgs:latest --target=lrgs .
+      - name: Build migrations container
+        run: docker build -t ghcr.io/usace-watermanagement/opendcs/migration:latest --target=migration .
