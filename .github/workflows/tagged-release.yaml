@@ -1,0 +1,38 @@
+---
+name: Tagged Release
+on:
+  push:
+    tags:
+      # Allow specific version of OpenDCS marked for test, including RCs
+      - 'test-[7].[05].[0-9][0-9]*'
+      - 'test-[7].[05].[0-9][0-9]*-RC[0-9][0-9]+'
+      # allow tagging that maps to the main branch of OpenDCS with a date
+      - 'test-main-[0-9][0-9][0-9][0-9].[01][0-2].[0-3][0-9]'
+jobs:
+  cwbi-test:
+    permissions:
+      id-token: write
+      contents: write
+      packages: write
+    uses: ./.github/workflows/release.yaml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      branch: ${{github.ref_name}}
+      nightly: false
+  deploy-test:
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+    needs: cwbi-test
+    uses: ./.github/workflows/deploy.yaml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      iam_role: arn:aws-us-gov:iam::${{secrets.CWBI_TEST_ACCOUNT_AWS}}:role/github-actions-ecr-cwms-opendcs
+    with:
+      apps_image: ${{needs.cwbi-test.outputs.apps_image}}
+      lrgs_image: ${{needs.cwbi-test.outputs.lrgs_image}}
+      migration_image: ${{needs.cwbi-test.outputs.migration_image}}
+      region: us-gov-west-1
+      tag: test

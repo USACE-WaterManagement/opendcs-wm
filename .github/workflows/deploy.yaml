@@ -15,12 +15,14 @@ on:
       region:
         type: string
         required: true
-      iam_role:
+      tag:
         type: string
         required: true
     secrets:
       token:
-       required: false
+        required: false
+      iam_role:
+        required: true
 
 jobs:
   deploy:
@@ -34,7 +36,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ inputs.region }}
-          role-to-assume: ${{ inputs.iam_role }}
+          role-to-assume: ${{ secrets.iam_role }}
           output-credentials: true
     # Hello from AWS: WhoAmI
       - name: Sts GetCallerIdentity
@@ -64,9 +66,9 @@ jobs:
           IMAGE_TAG: latest
         run: |
           docker tag ${{inputs.apps_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag ${{inputs.apps_image}} $ECR_REGISTRY/$ECR_REPOSITORY:dev 
+          docker tag ${{inputs.apps_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:dev
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
       - name: Push LRGS Image to ECR Repo
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -75,9 +77,9 @@ jobs:
         run: |
           
           docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:dev 
+          docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:dev
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
       - name: Push Migration Image to ECR Repo
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -86,9 +88,9 @@ jobs:
         run: |
           
           docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:dev 
+          docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:dev
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
       - name: ECR Logout
         if: always()
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
