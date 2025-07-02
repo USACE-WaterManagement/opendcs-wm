@@ -15,6 +15,9 @@ on:
       region:
         type: string
         required: true
+      tag:
+        type: string
+        required: true
     secrets:
       token:
         required: false
