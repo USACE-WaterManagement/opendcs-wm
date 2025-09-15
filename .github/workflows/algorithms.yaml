@@ -27,4 +27,4 @@ jobs:
           dependency-graph: generate-and-submit
       - name: Test Algorithms
         run: ./gradlew test --info
-        working-directory: ./algorithms`
+        working-directory: ./algorithms
