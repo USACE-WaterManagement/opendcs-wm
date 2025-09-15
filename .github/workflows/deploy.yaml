@@ -1,0 +1,97 @@
+---
+name: Deploy
+on:
+  workflow_call:
+    inputs:
+      lrgs_image:
+        type: string
+        required: true
+      apps_image:
+        type: string
+        required: true
+      migration_image:
+        type: string
+        required: true
+      region:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+    secrets:
+      token:
+        required: false
+      iam_role:
+        
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read # This is required for actions/checkout
+      packages: read # required to pull image
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ inputs.region }}
+          role-to-assume: ${{ secrets.iam_role }}
+          output-credentials: true
+    # Hello from AWS: WhoAmI
+      - name: Sts GetCallerIdentity
+        run: |
+          aws sts get-caller-identity
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'true'
+      - name: Log in to the Container registry
+        id: login-ghcr
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.token != null && secrets.token || secrets.GITHUB_TOKEN }}
+      - name: Get images
+        run: |
+          docker pull ${{inputs.apps_image}}
+          docker pull ${{inputs.lrgs_image}}
+          docker pull ${{inputs.migration_image}}
+      - name: Push Apps Image to ECR Repo
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: cwms-wmes-opendcs-apps
+          IMAGE_TAG: latest
+        run: |
+          docker tag ${{inputs.apps_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag ${{inputs.apps_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}} 
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
+      - name: Push LRGS Image to ECR Repo
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: cwms-wmes-opendcs-lrgs
+          IMAGE_TAG: latest
+        run: |
+          
+          docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}} 
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
+      - name: Push Migration Image to ECR Repo
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: cwms-wmes-opendcs-migration
+          IMAGE_TAG: latest
+        run: |
+          
+          docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}} 
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
+      - name: ECR Logout
+        if: always()
+        run: docker logout ${{ steps.login-ecr.outputs.registry }}

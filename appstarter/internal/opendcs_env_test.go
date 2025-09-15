@@ -16,14 +16,18 @@ func TestEnvironment(t *testing.T) {
 	t.Setenv(DATABASE_DRIVER, "org.opendcs.testing")
 	t.Setenv(DATATYPE_STANDARD, "CWMS")
 	t.Setenv(DATABASE_AUTH, "noop")
-	t.Setenv(OFFICE, "SPK,LRL,SPA")
+	t.Setenv(OFFICE, "SPK")
 	t.Setenv(KEY_GENERATOR, "fake")
-	t.Setenv(APPLICATION_NAME, "testApp")
+	t.Setenv(APPLICATION_NAME, "testApp,testApp2")
 
 	t.Run("environment is correct", func(t *testing.T) {
 		env := CurrentEnvironment()
-		if env.ApplicationName != "testApp" {
-			t.Fatal("Wrong Application name set.")
+		if len(env.ApplicationNames) != 2 {
+			t.Fatal("Application names not processed correctly.")
+		}
+
+		if !reflect.DeepEqual(env.ApplicationNames, []string{"testApp","testApp2"}) {
+			t.Fatal("Wrong Application Names set.")
 		}
 
 		if env.DataTypeStandard != "CWMS" {
@@ -58,12 +62,10 @@ func TestEnvironment(t *testing.T) {
 			t.Fatal("Wrong key generator set.")
 		}
 
-		if len(env.Offices) != 3 {
-			t.Fatal("Wrong number of offices set")
+		if env.Office != "SPK" {
+			t.Fatal("Office not set correctly.")
 		}
 
-		if !reflect.DeepEqual(env.Offices, []string{"SPK", "LRL", "SPA"}) {
-			t.Fatal("Wrong offices set.")
-		}
+		
 	})
 }

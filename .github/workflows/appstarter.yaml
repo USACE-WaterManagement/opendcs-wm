@@ -5,9 +5,11 @@ on:
   push:
     branches:
       - main
+      - cwbi-dev
   pull_request:
     branches:
       - main
+      - cwbi-dev
 
 jobs:
   test:
@@ -28,8 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+    # TODO: only need 4 fixed name images "api, apps, lrgs, and migration"
+    # apps will cover compdepends, compproc and routing scheduler
       - uses: actions/checkout@v4
-      - name: Build compdepends container
-        run: docker build -t ghcr.io/wm/usace-watermagement/compdepends:latest --target=compdepends .
-      - name: Build comproc container
-        run: docker build -t ghcr.io/usace-watermanagement/opendcs/compproc:latest --target=compproc .
+      - name: Build apps container
+        run: docker build -t ghcr.io/wm/usace-watermagement/compdepends:latest --target=apps .
+      - name: Build lrgs container
+        run: docker build -t ghcr.io/usace-watermanagement/opendcs/lrgs:latest --target=lrgs .
+      - name: Build migrations container
+        run: docker build -t ghcr.io/usace-watermanagement/opendcs/migration:latest --target=migration .

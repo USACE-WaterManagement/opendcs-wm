@@ -1,0 +1,36 @@
+name: Nightly Releases - Schedule
+on:
+  schedule:
+    - cron: "3 0 * * *"
+  workflow_dispatch:    
+
+jobs:
+  cwbi-dev:
+    permissions:
+      packages: write
+      contents: write
+    uses: ./.github/workflows/release.yaml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      branch: "cwbi-dev"
+      nightly: true
+  # Deploy OpenDCS nightly. Keeps everyone on their toes with new updates and keeps the containers 
+  # Updated
+  deploy-dev:
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+    needs: cwbi-dev
+    uses: ./.github/workflows/deploy.yaml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      iam_role: arn:aws-us-gov:iam::${{secrets.CWBI_DEV_ACCOUNT_AWS}}:role/github-actions-ecr-cwms-opendcs
+    with:
+      tag: dev
+      apps_image: ${{needs.cwbi-dev.outputs.apps_image}}
+      lrgs_image: ${{needs.cwbi-dev.outputs.lrgs_image}}
+      migration_image: ${{needs.cwbi-dev.outputs.migration_image}}
+      region: us-gov-west-1
+      
