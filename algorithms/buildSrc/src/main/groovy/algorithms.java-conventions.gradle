@@ -22,6 +22,9 @@ configurations {
         exclude group: "log4j"
         exclude group: "org.apache.xmlbeans", module: "xmlbeans"
         exclude group: "dom4j", module: "dom4j"
+        exclude group: "com.mrsid"
+        exclude group: "com.oracle.database.jdbc"
+
     }
 }
 
@@ -55,6 +58,9 @@ dependencies {
         exclude group: "javax.help"
         exclude group: "org.jooq.pro"
     }
+
+    testImplementation enforcedPlatform(libs.junit.bom)
+    testImplementation(libs.bundles.junit)
 }
 
 java {

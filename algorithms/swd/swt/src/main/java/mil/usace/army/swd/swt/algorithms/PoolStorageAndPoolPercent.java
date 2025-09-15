@@ -28,17 +28,24 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.CallableStatement;
 
-import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.opendcs.annotations.PropertySpec;
 import org.opendcs.annotations.algorithm.Algorithm;
 import org.opendcs.annotations.algorithm.Input;
 import org.opendcs.annotations.algorithm.Output;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.ByteArrayInputStream;
 import java.util.*;
 //AW:IMPORTS_END
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 
 @Algorithm(description = "This algorithm calculates pool storage and pool percent based on a storage value in a time series.")
 public class PoolStorageAndPoolPercent extends decodes.tsdb.algo.AW_AlgorithmBase
@@ -50,7 +57,7 @@ public class PoolStorageAndPoolPercent extends decodes.tsdb.algo.AW_AlgorithmBas
     public NamedVariable poolStor = new NamedVariable("poolStor", 0);
     @Output
     public NamedVariable poolPercent = new NamedVariable("poolPercent", 0);
-    
+
 
     @PropertySpec(value = "true", description = "Calculate if Over full")
     public boolean boolCalcOverFull = true;
@@ -118,60 +125,28 @@ public class PoolStorageAndPoolPercent extends decodes.tsdb.algo.AW_AlgorithmBas
         //call the base class method getParmTsId() with the role name.  That is, whatever your algorithm is calling the parameter (e.g. "inputParam", "indepThing") as it appears in the group box 'Input Time Series' above.
         TimeSeriesIdentifier tsid = getParmTsId("storInst");   //Interface TimeSeriesIdentifier is in package decodes.tsdb
         String strTsId = tsid.getUniqueString();
-  
+
         String[] strArrResult = strTsId.split("\\.");  //this looks strange because the dot in regular expressions means "any character" so therefore you have to escape the dot
-  
+
         //get and parse the XML CLOB that specifies the pool information
-        
-        
+
+
         try {
             //obtain the CLOB containing the XML that describes the min and max location levels for the pool
-            
+
             String strLocation= strArrResult[0];
             String strTextKey = String.format("POOL.%s.%s", strLocation, strPoolName);
             String strCwmsText = cwmsText.retrieveText(conn, strTextKey);
+            NeededLevels levels = NeededLevels.fromXml(strLocation, strCwmsText);
             //now parse the XML into a jdom class object
-            org.jdom.Document doc = null;
-            Element root = null;
-            org.jdom.input.SAXBuilder parser = new org.jdom.input.SAXBuilder(false);  //create a SAX parser with no validation           
-            doc = parser.build(new ByteArrayInputStream(strCwmsText.getBytes("UTF-8")));            
-            root = doc.getRootElement();
-            //System.out.println("  rootname: "+ root.getName());
-            //from the root document, navigate down to the min_loc_level_ref section and query for the string that contains it's id
-            ArrayList arrlist1 = new ArrayList();
-            arrlist1.addAll(root.getChildren("min_loc_level_ref"));
-            Element elemSpecifiedLevelMin = (Element)arrlist1.get(0);
-            //System.out.println("name is " + elemSpecifiedLevelMin.getName() );
-
-            ArrayList arrlist2 = new ArrayList();
-            arrlist2.addAll(elemSpecifiedLevelMin.getChildren("specified_level"));
-            Element elemSpecifiedLevelMinId = (Element)arrlist2.get(0);
-            //System.out.println("name is " + elemSpecifiedLevelMinId.getName() );
-            String strPoolMinLevelId = elemSpecifiedLevelMinId.getAttributeValue("id");
-            //System.out.println(" min_loc_level_ref id = " + strPoolMinLevelId);
-
-            //from the root document, navigate down to the max_loc_level_ref section and query for the string that contains it's id
-            ArrayList arrlist3 = new ArrayList();
-            arrlist3.addAll(root.getChildren("max_loc_level_ref"));
-            Element elemSpecifiedLevelMax = (Element)arrlist3.get(0);
-            //System.out.println("name is " + elemSpecifiedLevelMax.getName() );
-
-            ArrayList arrlist4 = new ArrayList();
-            arrlist4.addAll(elemSpecifiedLevelMax.getChildren("specified_level"));
-            Element elemSpecifiedLevelMaxId = (Element)arrlist4.get(0);
-            //System.out.println("name is " + elemSpecifiedLevelMaxId.getName() );
-            String strPoolMaxLevelId = elemSpecifiedLevelMaxId.getAttributeValue("id");
-        
-            String strLocLevelId = String.format("%s.Elev.Inst.0.%s", strLocation, strPoolMinLevelId);
 
 
-            List<TimeValueQuality> result = cwmsLevel.retrieveLocationLevelValues(conn, strLocLevelId, "ft", _timeSliceBaseTime, _timeSliceBaseTime, null, null, null, aggTZ, null);
+            List<TimeValueQuality> result = cwmsLevel.retrieveLocationLevelValues(conn, levels.minLevelId, "ft", _timeSliceBaseTime, _timeSliceBaseTime, null, null, null, aggTZ, null);
 
             double fElevAtMinLocLevel = result.get(0).getValue();
 
-            strLocLevelId = String.format("%s.Elev.Inst.0.%s", strLocation, strPoolMaxLevelId);
-            result = cwmsLevel.retrieveLocationLevelValues(conn, strLocLevelId, "ft", _timeSliceBaseTime, _timeSliceBaseTime, null, null, null, aggTZ, null);
-            
+            result = cwmsLevel.retrieveLocationLevelValues(conn, levels.maxLevelId, "ft", _timeSliceBaseTime, _timeSliceBaseTime, null, null, null, aggTZ, null);
+
 
             double fElevAtMaxLocLevel = result.get(0).getValue();
             String strRatingSpec = String.format("%s.%s.%s", strLocation, strElev2StorRatingTemplate, strElev2StorRatingSpecVersion); //of the form: "KEYS.Elev;Stor.Linear.Production"
@@ -197,7 +172,7 @@ public class PoolStorageAndPoolPercent extends decodes.tsdb.algo.AW_AlgorithmBas
             setOutput(poolPercent, fPoolFilledPercent);
 
         } //end try block
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             throw new DbCompException("Unable to perform calculation.", ex);
         }
@@ -212,5 +187,67 @@ public class PoolStorageAndPoolPercent extends decodes.tsdb.algo.AW_AlgorithmBas
     {
         cwmsRatingDao.close();
         tsdb.freeConnection(conn);
+    }
+
+
+    public static final class NeededLevels
+    {
+        public final String location;
+        public final String minLevelId;
+        public final String maxLevelId;
+
+        private NeededLevels(String location, String minLevelId, String maxLevelId)
+        {
+            this.location = location;
+            this.minLevelId = String.format("%s.Elev.Inst.0.%s", location, minLevelId);
+            this.maxLevelId = String.format("%s.Elev.Inst.0.%s", location, maxLevelId);
+        }
+
+        public static NeededLevels fromXml(String location, String xml) throws Exception
+        {
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            Reader reader = new StringReader(xml);
+            XMLEventReader xmlReader = factory.createXMLEventReader(reader);
+
+            String minLevelId = null;
+            String maxLevelId = null;
+            while(xmlReader.hasNext())
+            {
+                XMLEvent event = xmlReader.nextEvent();
+                if (event.isStartElement())
+                {
+                    StartElement se = event.asStartElement();
+                    final String elementName = se.getName().getLocalPart();
+                    if ("max_loc_level_ref".equals(elementName))
+                    {
+                        maxLevelId = getLevelId(xmlReader);
+                    }
+                    else if("min_loc_level_ref".equals(elementName))
+                    {
+                        minLevelId = getLevelId(xmlReader);
+                    }
+                }
+            }
+            return new NeededLevels(location, minLevelId, maxLevelId);
+        }
+
+        private static String getLevelId(XMLEventReader xmlReader) throws Exception
+        {
+            XMLEvent event = xmlReader.nextEvent();
+            while(!event.isEndElement())
+            {
+                if (event.isStartElement())
+                {
+                    StartElement se = event.asStartElement();
+                    if (se.getName().getLocalPart().equals("specified_level"))
+                    {
+                        return se.getAttributeByName(QName.valueOf("id")).getValue();
+                    }
+                }
+                event = xmlReader.nextEvent();
+            }
+            return null;
+        }
     }
 }

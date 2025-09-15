@@ -6,6 +6,8 @@ cwms-db-codegen = { strictly = "7.0.0-OpenDCS" }
 monolith = { strictly = "2.0.2" }
 cwms-ratings = "1.1.0"
 nucleus = "1.1.1"
+#test deps
+junit = "5.10.2"
 
 [libraries]
 opendcs = { module = "org.opendcs:opendcs", version.ref="opendcs"}
@@ -23,7 +25,18 @@ hec-monolith = { module = "mil.army.usace.hec:hec-monolith", version.ref = "mono
 hec-cwms-ratings-core = { module = "mil.army.usace.hec:hec-cwms-ratings-core", version.ref = "cwms-ratings" }
 hec-nucleus-metadata = { module = "mil.army.usace.hec:hec-nucleus-metadata", version.ref = "nucleus" }
 
+# test deps
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+junit-platform-engine = { module = "org.junit.platform:junit-platform-engine" }
+junit-platform-commons = { module = "org.junit.platform:junit-platform-commons" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params" }
+
 [bundles]
 opendcs = ["opendcs", "opendcs-annotations", "org-slf4j-api"]
 cwms-data-access = ["cwms-db-jooq", "cwms-db-codegen", "cwms-db-aspects", "cwms-db-dao",
                     "hec-db-jdbc", "hec-monolith", "hec-cwms-ratings-core", "hec-nucleus-metadata"]
+junit = [ "junit-api", "junit-engine", "junit-params" ]
+junit-platform = [ "junit-platform-launcher", "junit-platform-engine", "junit-platform-commons" ]
