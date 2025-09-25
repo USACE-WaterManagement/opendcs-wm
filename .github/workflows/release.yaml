@@ -22,6 +22,9 @@ on:
       migration_image:
         description: Database Migration image
         value: ${{ jobs.release.outputs.migration_image }}
+      api_image:
+        description: REST API Image
+        value: ${{ jobs.release.outputs.migration_image }}
   workflow_dispatch:
     inputs:
       branch:
@@ -73,18 +76,22 @@ jobs:
         run: |
           REPO=`echo "${{github.repository}}" | tr  '[:upper:]' '[:lower:]'`
           echo "REPO=$REPO" >> $GITHUB_ENV
+          docker build -t opendcs-api:build-latest -f Dockerfile.api .
           docker build -t opendcs-lrgs:build-latest --target=lrgs .
           docker build -t opendcs-apps:build-latest --target=apps .
           docker build -t opendcs-migration:build-latest --target=migration .
+          docker tag opendcs-api:build-latest ghcr.io/${REPO}/opendcs-api:$VERSION
           docker tag opendcs-lrgs:build-latest ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker tag opendcs-apps:build-latest ghcr.io/${REPO}/opendcs-apps:$VERSION
           docker tag opendcs-migration:build-latest ghcr.io/${REPO}/opendcs-migration:$VERSION
+          docker push ghcr.io/${REPO}/opendcs-api:$VERSION
           docker push ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker push ghcr.io/${REPO}/opendcs-apps:$VERSION
           docker push ghcr.io/${REPO}/opendcs-migration:$VERSION
           echo "apps_image=ghcr.io/${REPO}/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
           echo "lrgs_image=ghcr.io/${REPO}/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
           echo "migration_image=ghcr.io/${REPO}/opendcs-migration:$VERSION" >> $GITHUB_OUTPUT
+          echo "api_image=ghcr.io/${REPO}/opendcs-api:$VERSION" >> $GITHUB_OUTPUT
       - name: Logout of GH registry
         if: ${{ always() }}
         run: |
