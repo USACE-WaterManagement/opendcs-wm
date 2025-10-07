@@ -20,6 +20,7 @@ exec manageDatabase -I ${OPENDCS_IMPLEMENTATION} \
                -DCCP_SCHEMA=CCP \
                -DDEFAULT_OFFICE=LRL \
                -DDEFAULT_OFFICE_CODE=9 \
+               -Dopendcs.flyway.migrate=true \
                -DTABLE_SPACE_SPEC= \
                -appUsername "${DCS_USERNAME}" \
                -appPassword "${DCS_PASSWORD}"
