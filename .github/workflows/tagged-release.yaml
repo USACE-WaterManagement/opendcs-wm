@@ -8,6 +8,7 @@ on:
       - 'test-[7].[05].[0-9]+-RC[0-9][0-9]+'
       # allow tagging that maps to the main branch of OpenDCS with a date
       - 'test-main-[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]'
+      - 'test-main-[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]-[a-z]+'
 
 jobs:
   cwbi-test:
