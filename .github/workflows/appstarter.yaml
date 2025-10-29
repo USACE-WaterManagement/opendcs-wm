@@ -1,13 +1,13 @@
 ---
-name: App starter (CWBI Test)
+name: App starter (CWBI Prod)
 
 on:
   push:
     branches:
-      - cwbi-test
+      - cwbi-prod
   pull_request:
     branches:
-      - cwbi-test
+      - cwbi-prod
 
 jobs:
   test:

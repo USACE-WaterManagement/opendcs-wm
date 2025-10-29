@@ -3,15 +3,15 @@ name: Tagged Release
 on:
   push:
     tags:
-      # Allow specific version of OpenDCS marked for test, including RCs
-      - 'test-[7].[05].[0-9]+'
-      - 'test-[7].[05].[0-9]+-RC[0-9][0-9]+'
+      # Allow specific version of OpenDCS marked for prod, including RCs
+      - 'prod-[7].[05].[0-9]+'
+      - 'prod-[7].[05].[0-9]+-RC[0-9][0-9]+'
       # allow tagging that maps to the main branch of OpenDCS with a date
-      - 'test-main-[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]'
-      - 'test-main-[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]-[a-z]+'
+      - 'prod-main-[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]'
+      - 'prod-main-[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]-[a-z]+'
 
 jobs:
-  cwbi-test:
+  cwbi-prod:
     permissions:
       id-token: write
       contents: write
@@ -22,20 +22,20 @@ jobs:
     with:
       branch: ${{github.ref_name}}
       nightly: false
-  deploy-test:
+  deploy-prod:
     permissions:
       id-token: write
       contents: read
       packages: read
-    needs: cwbi-test
+    needs: cwbi-prod
     uses: ./.github/workflows/deploy.yaml
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-      iam_role: arn:aws-us-gov:iam::${{secrets.CWBI_TEST_ACCOUNT_AWS}}:role/github-actions-ecr-cwms-opendcs
+      iam_role: arn:aws-us-gov:iam::${{secrets.CWBI_PROD_ACCOUNT_AWS}}:role/github-actions-ecr-cwms-opendcs
     with:
-      apps_image: ${{needs.cwbi-test.outputs.apps_image}}
-      lrgs_image: ${{needs.cwbi-test.outputs.lrgs_image}}
-      migration_image: ${{needs.cwbi-test.outputs.migration_image}}
-      api_image: ${{needs.cwbi-test.outputs.api_image}}
+      apps_image: ${{needs.cwbi-prod.outputs.apps_image}}
+      lrgs_image: ${{needs.cwbi-prod.outputs.lrgs_image}}
+      migration_image: ${{needs.cwbi-prod.outputs.migration_image}}
+      api_image: ${{needs.cwbi-prod.outputs.api_image}}
       region: us-gov-west-1
-      tag: test
+      tag: prod
