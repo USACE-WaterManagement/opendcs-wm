@@ -23,8 +23,8 @@ on:
         description: Database Migration image
         value: ${{ jobs.release.outputs.migration_image }}
       api_image:
-        description: REST API Image
-        value: ${{ jobs.release.outputs.migration_image }}
+        description: REST API/UI Image
+        value: ${{ jobs.release.outputs.api_image }}
   workflow_dispatch:
     inputs:
       branch:
