@@ -49,6 +49,7 @@ jobs:
       apps_image: ${{steps.build_image.outputs.apps_image}}
       lrgs_image: ${{steps.build_image.outputs.lrgs_image}}
       migration_image: ${{steps.build_image.outputs.migration_image}}
+      api_image: ${{steps.build_image.outputs.api_image}}
     steps:
       - name: checkout code
         uses: actions/checkout@v4.2.2
