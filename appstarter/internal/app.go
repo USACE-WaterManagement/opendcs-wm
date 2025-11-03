@@ -79,6 +79,9 @@ func (app *TsdbApp) Start() error {
 	propsFile.WriteString(fmt.Sprintf("-DDCSTOOL_HOME=%s\n", app.installDir))
 	propsFile.WriteString(fmt.Sprintf("-DDCSTOOL_USERDIR=%s\n", app.userDir))
 	propsFile.WriteString(fmt.Sprintf("-DDECODES_INSTALL_DIR=%s\n", app.installDir))
+	propsFile.WriteString(fmt.Sprintf("-DAPP_NAME=%s\n", app.Profile.AppName))
+	propsFile.WriteString("-Dlogback.configurationFile=/opt/opendcs/logback.xml\n")
+	propsFile.WriteString("-DLOG_LEVEL=INFO\n")
 
 	propsFile.Close()
 	javaPath, err := exec.LookPath("java")
@@ -87,7 +90,7 @@ func (app *TsdbApp) Start() error {
 	}
 	log.Printf("Found java at '%s'", javaPath)
 	app.handle = exec.Command(javaPath, fmt.Sprintf("@%s", propsFile.Name()),
-		app.appClass, "-P", app.Profile.ProfileFile, "-d3", "-l", "/dev/stdout",
+		app.appClass, "-P", app.Profile.ProfileFile,
 		"-a", app.Profile.AppName)
 
 	stdout, err := app.handle.StdoutPipe()
@@ -125,7 +128,7 @@ func redirectPipe(appPipe io.ReadCloser, app *TsdbApp, level string) {
 	// original reader was getting stuck
 	buffer := bufio.NewScanner(appPipe)
 	for buffer.Scan() {
-		log_message(level, app.Profile.AppName, app.Profile.Office, buffer.Text())
+		log.Println(buffer.Text()) // already using structured logging from application
 	}
 	log_message(level, app.Profile.AppName, app.Profile.Office, "Log output terminated.")
 }
