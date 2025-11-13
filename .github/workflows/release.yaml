@@ -67,6 +67,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4.4.1
       - name: Build algorithms
+        working-directory: algorithms
         run: ./gradlew build --info
       - name: Create GitHub Release
         id: create_release
