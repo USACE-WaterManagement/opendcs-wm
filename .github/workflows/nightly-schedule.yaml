@@ -2,7 +2,7 @@ name: Nightly Releases - Schedule
 on:
   schedule:
     - cron: "3 0 * * *"
-  workflow_dispatch:    
+  workflow_dispatch:
 
 jobs:
   cwbi-dev:
