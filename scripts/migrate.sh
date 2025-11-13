@@ -27,7 +27,7 @@ exec java -Xms120m -cp $CP \
     -DAPP_NAME=migration \
     -DLOG_LEVEL=${LOG_LEVEL:-INFO} \
     -DDCSTOOL_HOME=$DCSTOOL_HOME -DDECODES_INSTALL_DIR=$DCSTOOL_HOME -DDCSTOOL_USERDIR=$DCSTOOL_USERDIR \
-    org.opendcs.database.ManageDatabaseApp -I OpenDCS-Postgres \
+    org.opendcs.database.ManageDatabaseApp -I CWMS-Oracle \
     -P /dcs_user_dir/user.properties \
     -username ${FLYWAY_USERNAME} \
     -password ${FLYWAY_PASSWORD} \
