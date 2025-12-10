@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type TsdbApp struct {
@@ -129,6 +130,7 @@ func redirectPipe(appPipe io.ReadCloser, app *TsdbApp, level string) {
 	buffer := bufio.NewScanner(appPipe)
 	for buffer.Scan() {
 		log.Println(buffer.Text()) // already using structured logging from application
+		time.Sleep(100 * time.Millisecond)
 	}
 	log_message(level, app.Profile.AppName, app.Profile.Office, "Log output terminated.")
 }
