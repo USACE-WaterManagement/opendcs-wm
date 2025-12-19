@@ -92,9 +92,12 @@ func (app *TsdbApp) Start() error {
 	app.handle = exec.Command(javaPath, fmt.Sprintf("@%s", propsFile.Name()),
 		app.appClass, "-P", app.Profile.ProfileFile,
 		"-a", app.Profile.AppName)
+	app.handle.Env = os.Environ()
+	fmt.Printf("Environment %s\n", app.handle.Env)
 
 	stdout, err := app.handle.StdoutPipe()
 	if err != nil {
+		log.Printf("Command was %s\n", app.handle.String())
 		panic(err)
 	}
 
@@ -106,16 +109,17 @@ func (app *TsdbApp) Start() error {
 	go redirectPipe(stdout, app, "info")
 	go redirectPipe(stderr, app, "error")
 	log_message("info", app.Profile.AppName, app.Profile.Office, "Starting application")
+	log.Printf("Command was %s\n", app.handle.String())
 	err = app.handle.Start()
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		return err
 	}
 	go func(app *TsdbApp) {
 		err = app.handle.Wait()
 		app.active = false
 		if err != nil {
-			log.Fatalf("App failed with %s", err)
+			log.Printf("App failed with %s", err)
 		}
 	}(app)
 
@@ -128,7 +132,7 @@ func redirectPipe(appPipe io.ReadCloser, app *TsdbApp, level string) {
 	// original reader was getting stuck
 	buffer := bufio.NewScanner(appPipe)
 	for buffer.Scan() {
-		log.Println(buffer.Text()) // already using structured logging from application
+		fmt.Println(buffer.Text()) // already using structured logging from application
 	}
 	log_message(level, app.Profile.AppName, app.Profile.Office, "Log output terminated.")
 }
