@@ -13,7 +13,7 @@ import (
 func main() {
 	err := godotenv.Overload(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
+		log.Printf("No .env file, assuming current environment is correct. %s", err)
 	}
 	appClass := os.Args[1]
 	myenv := opendcs.CurrentEnvironment()
