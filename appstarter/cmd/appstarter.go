@@ -6,14 +6,20 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	opendcs "github.com/usace-watermanagement/opendcs-watermanagement/appstarter/internal"
 )
 
 func main() {
+	err := godotenv.Overload(".env")
+	if err != nil {
+		log.Printf("No .env file, assuming current environment is correct. %s", err)
+	}
 	appClass := os.Args[1]
 	myenv := opendcs.CurrentEnvironment()
-	fmt.Printf("Type %s\n", myenv.DatabaseType)
-	fmt.Printf("Env -> %s", myenv)
+	fmt.Printf("Type -> %s\n", myenv.DatabaseType)
+	fmt.Printf("Env -> %s\n", myenv)
+	fmt.Printf("Main Class -> %s\n", appClass)
 	profiles := opendcs.GetProfiles(myenv, opendcs.ProfileTemplate)
 	fmt.Println(profiles)
 	var apps []*opendcs.TsdbApp

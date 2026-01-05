@@ -8,3 +8,6 @@ build
 **/.project
 **/.idea
 appstarter/logfilter.txt
+**/.env
+**/.env.local
+**/*.log
