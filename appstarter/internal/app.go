@@ -77,7 +77,7 @@ func (app *TsdbApp) Start() error {
 	propsFile.WriteString("\n")
 	propsFile.WriteString("-Xms300m\n")
 	propsFile.WriteString("-Xmx300m\n")
-	propsFile.WriteString("-Dopendcs.computations.getNew.interval.milliseconds=1000")
+	propsFile.WriteString("-Dopendcs.computations.getNew.interval.milliseconds=1000\n")
 	// Uncomment if you need to connect VisualVM when this is running in a docker container.
 	// propsFile.WriteString("-Dcom.sun.management.jmxremote\n")
 	// propsFile.WriteString("-Dcom.sun.management.jmxremote.port=9010\n")
