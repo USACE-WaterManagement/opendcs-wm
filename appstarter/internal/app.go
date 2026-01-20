@@ -89,7 +89,7 @@ func (app *TsdbApp) Start() error {
 	propsFile.WriteString(fmt.Sprintf("-DDECODES_INSTALL_DIR=%s\n", app.installDir))
 	propsFile.WriteString(fmt.Sprintf("-DAPP_NAME=%s\n", app.Profile.AppName))
 	propsFile.WriteString("-Dlogback.configurationFile=/opt/opendcs/logback.xml\n")
-	propsFile.WriteString("-DLOG_LEVEL=TRACE\n")
+	propsFile.WriteString("-DLOG_LEVEL=INFO\n")
 
 	propsFile.Close()
 	javaPath, err := exec.LookPath("java")
