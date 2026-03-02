@@ -1,5 +1,5 @@
-ARG VERSION="sha-06de04f"
-ARG MARKER="b"
+ARG VERSION="sha-513f15d"
+ARG MARKER="a"
 
 # Intermediate container here to build district computations
 FROM golang:1.24.3 AS appstarter_builder
