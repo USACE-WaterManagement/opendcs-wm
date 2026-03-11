@@ -16,7 +16,12 @@
 package mil.usace.army.opendcs.support;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 
+import opendcs.dai.LoadingAppDAI;
 import org.opendcs.database.DatabaseService;
 import org.opendcs.database.api.OpenDcsDatabase;
 import org.opendcs.utils.logging.OpenDcsLoggerFactory;
@@ -39,23 +44,51 @@ public final class ListCompApps extends TsdbAppTemplate
 {
     private static Logger log = OpenDcsLoggerFactory.getLogger();
 
-    
-    public static void main(String[] argsRaw)
+    public ListCompApps()
     {
-        CmdLineArgs args = new CmdLineArgs();
-        args.parseArgs(argsRaw);
-        DecodesSettings settings;
-        try
-        {
-            settings = DecodesSettings.fromProfile(args.getProfile());
-            
+        super(null);
+    }
 
-        }
-        catch (IOException ex)
+    @Override
+    public void runApp()
+    {
+        try (LoadingAppDAI compDao = theDb.makeLoadingAppDAO())
         {
-            log.atError().setCause(ex).log("Unable to initialize database connection.");
+            List<ApiLoadingApp> apps = compDao.listComputationApps(true)
+                                              .stream()
+                                              .map(mapLoading)
+                                              .collect(Collectors.toList());
+            ObjectMapper objMap = new ObjectMapper();
+            objMap.registerModule(new Jdk8Module());
+            objMap.registerModule(new JavaTimeModule());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'[z]");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            objMap.setDateFormat(sdf);
+            System.out.println(objMap.writeValueAsString(apps));
         }
-        
+        catch (Exception ex)
+        {
+            log.atError().setCause(ex).log("Unasble to fully process extraction of computation app information.");
+        }
+    }
+
+    static ApiLoadingApp mapLoading(CompAppInfo app)
+	{
+		ApiLoadingApp ret = new ApiLoadingApp();
+		ret.setAppId(app.getAppId().getValue());
+		ret.setAppName(app.getAppName());
+		ret.setComment(app.getComment());
+		ret.setLastModified(app.getLastModified());
+		ret.setManualEditingApp(app.getManualEditApp());
+		ret.setAppType(app.getAppType());
+		ret.setProperties(app.getProperties());
+		return ret;
+	}
+    
+    public static void main(String[] args)
+    {
+        ListCompApps app = new ListCompApps();
+        app.execute(args);
         
     }
 
