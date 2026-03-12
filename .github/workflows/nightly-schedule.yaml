@@ -9,7 +9,7 @@ jobs:
     permissions:
       packages: write
       contents: write
-    uses: ./.github/workflows/release.yaml
+    uses: USACE-WaterManagement/opendcs-wm/.github/workflows/release.yaml@cwbi-dev
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
     with:
@@ -23,7 +23,7 @@ jobs:
       contents: read
       packages: read
     needs: cwbi-dev
-    uses: ./.github/workflows/deploy.yaml
+    uses: USACE-WaterManagement/opendcs-wm/.github/workflows/deploy.yaml@cwbi-dev
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
       iam_role: arn:aws-us-gov:iam::${{secrets.CWBI_DEV_ACCOUNT_AWS}}:role/github-actions-ecr-cwms-opendcs
