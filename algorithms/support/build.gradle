@@ -4,5 +4,5 @@ plugins {
 }
 
 dependencies {
-    compileOnly(libs.bundles.faster.xml)
+    implementation(libs.bundles.faster.xml)
 }
