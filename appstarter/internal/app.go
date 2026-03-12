@@ -64,12 +64,11 @@ type LogMessage struct {
 	Msg   string `json:"msg"`
 }
 
-func (app *TsdbApp) Start() error {
-	var err error
+func CreatePropFile(app *TsdbApp) *os.File {
 	propsFile, err := os.OpenFile(fmt.Sprintf("args-%s-%s", app.Profile.Office, app.Profile.AppName),
 		os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	propsFile.WriteString("-cp ")
@@ -91,14 +90,48 @@ func (app *TsdbApp) Start() error {
 	propsFile.WriteString("-DLOG_LEVEL=TRACE\n")
 
 	propsFile.Close()
+	return propsFile
+}
+
+func javaPath() string {
 	javaPath, err := exec.LookPath("java")
 	if err != nil {
 		panic(err)
 	}
 	log.Printf("Found java at '%s'", javaPath)
-	app.handle = exec.Command(javaPath, fmt.Sprintf("@%s", propsFile.Name()),
+	return javaPath
+}
+
+func setupCommand(javaPath string, propsFile *os.File, app *TsdbApp) *exec.Cmd {
+	return exec.Command(javaPath, fmt.Sprintf("@%s", propsFile.Name()),
 		app.appClass, "-P", app.Profile.ProfileFile,
 		"-a", app.Profile.AppName)
+}
+
+// expect output
+func (app *TsdbApp) WaitForOutput() string {
+	var err error
+	var propsFile = CreatePropFile(app)
+	var javaPath = javaPath()
+
+	app.handle = setupCommand(javaPath, propsFile, app)
+
+	out, err := app.handle.Output()
+	if err != nil {
+		panic(err)
+	}
+	return string(out)
+}
+
+// Start in background
+func (app *TsdbApp) Start() error {
+	var err error
+	var propsFile = CreatePropFile(app)
+
+	var javaPath = javaPath()
+
+	app.handle = setupCommand(javaPath, propsFile, app)
+
 	app.handle.Env = os.Environ()
 	fmt.Printf("Environment %s\n", app.handle.Env)
 

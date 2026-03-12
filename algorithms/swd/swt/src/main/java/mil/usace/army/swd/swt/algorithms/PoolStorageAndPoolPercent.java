@@ -93,9 +93,9 @@ public class PoolStorageAndPoolPercent extends decodes.tsdb.algo.AW_AlgorithmBas
     @Override
     protected void beforeTimeSlices() throws DbCompException
     {
-        conn = tsdb.getConnection();
         try
         {
+            conn = tsdb.getConnection();
             cwmsText = CwmsDbServiceLookup.buildCwmsDb(CwmsDbText.class, conn);
             cwmsLevel = CwmsDbServiceLookup.buildCwmsDb(CwmsDbLevel.class, conn);
             cwmsRatingDao = new CwmsRatingDao((CwmsTimeSeriesDb)tsdb);;

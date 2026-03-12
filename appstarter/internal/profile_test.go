@@ -7,13 +7,12 @@ import (
 
 func TestProfiles(t *testing.T) {
 
-	apps := []string{"testApp","testApp2"}
 	env := EnvironmentVars{"XML", "jdbc:test", "noop", "org.opendcs.testing", "SPK",
-		"CWMS", "fake", apps, "/tmp/installDir", "/tmp/userDir"}
+		"CWMS", "fake", "compproc", "/tmp/installDir", "/tmp/userDir"}
 
 	profiles := GetProfiles(env, ProfileTemplate)
 
-	if len(profiles) != len(apps) {
+	if len(profiles) != 1 {
 		t.Fatalf("Not all profiles created. Only %d", len(profiles))
 	}
 
