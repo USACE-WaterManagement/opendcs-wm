@@ -8,7 +8,7 @@ plugins {
 
 eclipse {
     classpath {
-       downloadSources=true
+       downloadSources = true
        downloadJavadoc = true
     }
 }
@@ -59,8 +59,6 @@ dependencies {
         exclude group: "org.jooq.pro"
     }
 
-    testImplementation enforcedPlatform(libs.junit.bom)
-    testImplementation(libs.bundles.junit)
     testImplementation(libs.bundles.opendcs)
     testImplementation(libs.bundles.cwms.data.access) {
         exclude group: "org.jooq.pro", module: "jooq-meta"
@@ -90,6 +88,10 @@ dependencies {
         exclude group: "javax.help"
         exclude group: "org.jooq.pro"
     }
+
+    testImplementation enforcedPlatform(libs.junit.bom)
+    testImplementation(libs.bundles.junit)
+    testRuntimeOnly (libs.bundles.junit.platform)
 }
 
 java {
@@ -99,8 +101,8 @@ java {
 
 
 tasks.withType(JavaCompile) {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks.named('test', Test) {
