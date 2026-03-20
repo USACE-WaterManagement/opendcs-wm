@@ -19,10 +19,13 @@ jobs:
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5.0.2
         with:
-          go-version: 1.23.2
+          go-version: 1.25.1
       - name: test
         working-directory: appstarter/internal
-        run: go test -v
+        run: |
+          mkdir /tmp/userDir
+          mkdir /tmp/installDir
+          go test -v
   build:
     name: Build container
     runs-on: ubuntu-latest

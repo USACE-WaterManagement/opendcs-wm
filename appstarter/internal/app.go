@@ -110,7 +110,7 @@ func setupCommand(javaPath string, propsFile *os.File, app *TsdbApp) *exec.Cmd {
 }
 
 // expect output
-func (app *TsdbApp) WaitForOutput() string {
+func (app *TsdbApp) WaitForOutput() (string, error) {
 	var err error
 	var propsFile = CreatePropFile(app)
 	var javaPath = javaPath()
@@ -118,10 +118,7 @@ func (app *TsdbApp) WaitForOutput() string {
 	app.handle = setupCommand(javaPath, propsFile, app)
 
 	out, err := app.handle.Output()
-	if err != nil {
-		panic(err)
-	}
-	return string(out)
+	return string(out), err
 }
 
 // Start in background
