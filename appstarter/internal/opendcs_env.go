@@ -3,7 +3,6 @@ package opendcs
 import (
 	"log"
 	"os"
-	"strings"
 )
 
 ////go:embed decodes.properties.template
@@ -28,7 +27,7 @@ type EnvironmentVars struct {
 	Office           string
 	DataTypeStandard string
 	KeyGenerator     string
-	ApplicationNames  []string
+	ApplicationName  string
 
 	InstallDir string
 	UserDir    string
@@ -44,7 +43,7 @@ func CurrentEnvironment() EnvironmentVars {
 	var databaseDriver = os.Getenv(DATABASE_DRIVER)
 	var datatypeStandard = os.Getenv(DATATYPE_STANDARD)
 	var keyGenerator = os.Getenv(KEY_GENERATOR)
-	var applicationNames = strings.Split(os.Getenv(APPLICATION_NAME), ",")
+	var applicationName = os.Getenv(APPLICATION_NAME)
 	var office = os.Getenv(OFFICE)
 
 	var installDirStr = os.Getenv(DCSTOOL_HOME)
@@ -57,6 +56,6 @@ func CurrentEnvironment() EnvironmentVars {
 	}
 
 	ret := EnvironmentVars{databaseType, databaseUrl, databaseAuth, databaseDriver,
-		office, datatypeStandard, keyGenerator, applicationNames, installDirStr, userDirStr}
+		office, datatypeStandard, keyGenerator, applicationName, installDirStr, userDirStr}
 	return ret
 }

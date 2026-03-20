@@ -6,10 +6,12 @@ plugins {
 
 configurations {
     swd
+    support
 }
 
 dependencies {
     swd(project(":swd:swt"))
+    support(project(":support"))
 }
 
 configurations.all {
@@ -23,8 +25,12 @@ distributions {
         contents {
             into ("/") {
                 from configurations.swd
-                exclude "**/opendcs*.jar"
-                exclude "**/*slf4j*.jar"
+                // exclude "**/opendcs*.jar"
+                // exclude "**/*slf4j*.jar"
+            }
+
+            into ("/") {
+                from configurations.support
             }
         }
     }
