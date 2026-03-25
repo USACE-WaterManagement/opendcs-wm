@@ -1,4 +1,4 @@
-ARG VERSION="sha-513f15d"
+ARG VERSION="sha-ce479fe"
 ARG MARKER="a"
 
 # Intermediate container here to build district computations
