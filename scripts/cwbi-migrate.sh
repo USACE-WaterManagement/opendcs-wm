@@ -1,0 +1,22 @@
+#!/bin/bash
+
+export DATABASE_URL=$JDBC_URL
+export CWMS_OFFICE=LRL
+export DATABASE_TYPE=CWMS-Oracle
+export DATABASE_DRIVER="oracle.jdbc.driver.OracleDriver"
+export DATATYPE_STANDARD="CWMS"
+export KEYGENERATOR="decodes.sql.OracleSequenceKeyGenerator"
+
+export MIGRATION_USER=$FLYWAY_USERNAME
+export MIGRATION_PASSWORD=$FLYWAY_PASSWORD
+export APP_USER=$DCS_USERNAME
+export APP_PASSWORD=$DCS_PASSWORD
+
+export PLACEHOLDER_CWMS_SCHEMA=CWMS_20
+export PLACEHOLDER_CCP_SCHEMA=CCP
+export PLACEHOLDER_DEFAULT_OFFICE=HQ
+export PLACEHOLDER_DEFAULT_OFFICE_CODE=1
+export PLACEHOLDER_opendcs.flyway.baseline=false 
+export PLACEHOLDER_TABLE_SPACE_SPEC= 
+
+exec /migration.sh

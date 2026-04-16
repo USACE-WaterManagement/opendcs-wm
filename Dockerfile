@@ -30,15 +30,15 @@ ENV IMAGE_MARKER=${MARKER}
 COPY --chmod=0555 scripts/lrgs-cwbi.sh /
 CMD ["/lrgs-cwbi.sh"]
 
-FROM ghcr.io/opendcs/compproc:${VERSION} AS migration
+FROM ghcr.io/opendcs/migration:${VERSION} AS migration
 ARG VERSION
 ARG MARKER
 USER root
 RUN apk add --no-cache util-linux
 ENV IMAGE_MARKER=${MARKER}
-COPY --chmod=0555 scripts/migrate.sh /
+COPY --chmod=0555 scripts/cwbi-migrate.sh /
 USER opendcs:opendcs
 WORKDIR /dcs_user_dir
-CMD ["/migrate.sh"]
+CMD ["/cwbi-migrate.sh"]
 
 # TODO API - waiting on some verification of the API status
