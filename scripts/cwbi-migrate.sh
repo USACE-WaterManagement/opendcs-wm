@@ -13,11 +13,11 @@ export MIGRATION_PASSWORD=$FLYWAY_PASSWORD
 export APP_USER=$DCS_USERNAME
 export APP_PASSWORD=$DCS_PASSWORD
 
-export PLACEHOLDER_CWMS_SCHEMA=CWMS_20
-export PLACEHOLDER_CCP_SCHEMA=CCP
-export PLACEHOLDER_DEFAULT_OFFICE=HQ
-export PLACEHOLDER_DEFAULT_OFFICE_CODE=1
-export PLACEHOLDER_opendcs_flyway_baseline=false 
-export PLACEHOLDER_TABLE_SPACE_SPEC= 
+export placeholder_CWMS_SCHEMA=CWMS_20
+export placeholder_CCP_SCHEMA=CCP
+export placeholder_DEFAULT_OFFICE=HQ
+export placeholder_DEFAULT_OFFICE_CODE=1
+export placeholder_opendcs_flyway_baseline=false 
+export placeholder_TABLE_SPACE_SPEC= 
 
 exec /migration.sh
