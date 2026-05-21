@@ -20,8 +20,4 @@ export placeholder_DEFAULT_OFFICE_CODE=1
 export placeholder_opendcs_flyway_baseline=false 
 export placeholder_TABLE_SPACE_SPEC= 
 
-echo "user ${MIGRATION_USER}"
-echo "password (partial) ${MIGRATION_PASSWORD:0:10}"
-
-
 exec /migration.sh
