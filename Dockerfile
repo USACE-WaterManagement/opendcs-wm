@@ -44,3 +44,4 @@ CMD ["/cwbi-migrate.sh"]
 FROM ghcr.io/opendcs/web-api:${VERSION} AS web-api
 ARG VERSION
 ARG MARKER
+ENV DB_MAX_CONNECTIONS=30
