@@ -41,4 +41,6 @@ USER opendcs:opendcs
 WORKDIR /dcs_user_dir
 CMD ["/cwbi-migrate.sh"]
 
-# TODO API - waiting on some verification of the API status
+FROM ghcr.io/opendcs/web-api:${VERSION} AS web-api
+ARG VERSION
+ARG MARKER

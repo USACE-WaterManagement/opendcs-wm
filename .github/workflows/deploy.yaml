@@ -12,6 +12,9 @@ on:
       migration_image:
         type: string
         required: true
+      webapi_image:
+        type: string
+        required: true
       region:
         type: string
         required: true
@@ -59,6 +62,7 @@ jobs:
           docker pull ${{inputs.apps_image}}
           docker pull ${{inputs.lrgs_image}}
           docker pull ${{inputs.migration_image}}
+          docker pull ${{inputs.webapi_image}}
       - name: Push Apps Image to ECR Repo
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -75,7 +79,6 @@ jobs:
           ECR_REPOSITORY: cwms-wmes-opendcs-lrgs
           IMAGE_TAG: latest
         run: |
-          
           docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag ${{inputs.lrgs_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}} 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -86,9 +89,18 @@ jobs:
           ECR_REPOSITORY: cwms-wmes-opendcs-migration
           IMAGE_TAG: latest
         run: |
-          
           docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag ${{inputs.migration_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}} 
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
+      - name: Push Web APin Image to ECR Repo
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: cwms-wmes-opendcs-api
+          IMAGE_TAG: latest
+        run: |
+          docker tag ${{inputs.webapi_image}} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag ${{inputs.webapi_image}} $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}} 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{inputs.tag}}
       - name: ECR Logout

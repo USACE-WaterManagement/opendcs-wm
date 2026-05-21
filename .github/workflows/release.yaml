@@ -46,6 +46,7 @@ jobs:
       apps_image: ${{steps.build_image.outputs.apps_image}}
       lrgs_image: ${{steps.build_image.outputs.lrgs_image}}
       migration_image: ${{steps.build_image.outputs.migration_image}}
+      webapi_image: ${{steps.build_image.outputs.webapi_image}}
     steps:
       - name: checkout code
         uses: actions/checkout@v4.2.2
@@ -95,15 +96,18 @@ jobs:
           docker build -t opendcs-lrgs:build-latest --target=lrgs .
           docker build -t opendcs-apps:build-latest --target=apps .
           docker build -t opendcs-migration:build-latest --target=migration .
+          docker build -t opendcs-web-api:build-latest --target=web-api .
           docker tag opendcs-lrgs:build-latest ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker tag opendcs-apps:build-latest ghcr.io/${REPO}/opendcs-apps:$VERSION
           docker tag opendcs-migration:build-latest ghcr.io/${REPO}/opendcs-migration:$VERSION
+          docker tag opendcs-migration:build-latest ghcr.io/${REPO}/opendcs-web-api:$VERSION
           docker push ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker push ghcr.io/${REPO}/opendcs-apps:$VERSION
           docker push ghcr.io/${REPO}/opendcs-migration:$VERSION
           echo "apps_image=ghcr.io/${REPO}/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
           echo "lrgs_image=ghcr.io/${REPO}/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
           echo "migration_image=ghcr.io/${REPO}/opendcs-migration:$VERSION" >> $GITHUB_OUTPUT
+          echo "webapi_image=ghcr.io/${REPO}/opendcs-web-api:$VERSION" >> $GITHUB_OUTPUT
       - name: Logout of GH registry
         if: ${{ always() }}
         run: |
