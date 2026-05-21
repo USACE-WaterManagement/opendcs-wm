@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-export DB_URL=$JDBC_URL
+export DB_URL=$DATABASE_URL
 export DATABASE_TYPE=CWMS-Oracle
 export DATABASE_IMPLEMENTATION=CWMS-Oracle
 export DB_DRIVER_CLASS=oracle.jdbc.driver.OracleDriver
