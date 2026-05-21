@@ -22,6 +22,9 @@ on:
       migration_image:
         description: Database Migration image
         value: ${{ jobs.release.outputs.migration_image }}
+      webapi_image:
+        description: Web API (REST + UI) Image
+        value: ${{ jobs.release.outputs.webapi_image }}
   workflow_dispatch:
     inputs:
       branch:
