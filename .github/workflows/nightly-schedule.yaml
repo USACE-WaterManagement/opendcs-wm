@@ -32,5 +32,6 @@ jobs:
       apps_image: ${{needs.cwbi-dev.outputs.apps_image}}
       lrgs_image: ${{needs.cwbi-dev.outputs.lrgs_image}}
       migration_image: ${{needs.cwbi-dev.outputs.migration_image}}
+      webapi_image: ${{needs.cwbi-dev.outputs.webapi_image}}
       region: us-gov-west-1
       
