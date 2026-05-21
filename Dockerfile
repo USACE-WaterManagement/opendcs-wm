@@ -44,4 +44,5 @@ CMD ["/cwbi-migrate.sh"]
 FROM ghcr.io/opendcs/web-api:${VERSION} AS web-api
 ARG VERSION
 ARG MARKER
-ENV DB_MAX_CONNECTIONS=30
+COPY --chmod=0555 scripts/web.sh /
+ENTRYPOINT ["/web.sh"]
