@@ -12,4 +12,4 @@ export DB_USERNAME=$DCS_USERNAME
 export DB_PASSWORD=$DCS_PASSWORD
 export DB_VALIDATION_QUERY="select 1 from dual"
 
-exec $*
+exec /usr/local/tomecat/bin/catalina.sh run
