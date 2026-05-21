@@ -45,4 +45,7 @@ FROM ghcr.io/opendcs/web-api:${VERSION} AS web-api
 ARG VERSION
 ARG MARKER
 COPY --chmod=0555 scripts/web.sh /
+HEALTHCHECK  --interval=1m30s --timeout=30s --retries=5 --start-period=30s \
+    CMD curl http://localhost:7000/odcsapi/health/live" || exit 1
+
 ENTRYPOINT ["/web.sh"]
