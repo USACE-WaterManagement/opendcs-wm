@@ -22,10 +22,7 @@ jobs:
           go-version: 1.25.1
       - name: test
         working-directory: appstarter/internal
-        run: |
-          mkdir /tmp/userDir
-          mkdir /tmp/installDir
-          go test -v
+        run: go test -v
   build:
     name: Build container
     runs-on: ubuntu-latest
