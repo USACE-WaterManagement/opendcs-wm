@@ -50,7 +50,6 @@ jobs:
       apps_image: ${{steps.build_image.outputs.apps_image}}
       lrgs_image: ${{steps.build_image.outputs.lrgs_image}}
       migration_image: ${{steps.build_image.outputs.migration_image}}
-      api_image: ${{steps.build_image.outputs.api_image}}
     steps:
       - name: checkout code
         uses: actions/checkout@v4.2.2
@@ -97,7 +96,6 @@ jobs:
         run: |
           REPO=`echo "${{github.repository}}" | tr  '[:upper:]' '[:lower:]'`
           echo "REPO=$REPO" >> $GITHUB_ENV
-          docker build -t opendcs-api:build-latest -f Dockerfile.api .
           docker build -t opendcs-lrgs:build-latest --target=lrgs .
           docker build -t opendcs-apps:build-latest --target=apps .
           docker build -t opendcs-migration:build-latest --target=migration .
