@@ -2,7 +2,6 @@ package opendcs
 
 import (
 	"os"
-	"reflect"
 	"testing"
 )
 
@@ -18,16 +17,13 @@ func TestEnvironment(t *testing.T) {
 	t.Setenv(DATABASE_AUTH, "noop")
 	t.Setenv(OFFICE, "SPK")
 	t.Setenv(KEY_GENERATOR, "fake")
-	t.Setenv(APPLICATION_NAME, "testApp,testApp2")
+	t.Setenv(APPLICATION_NAME, "compproc")
 
 	t.Run("environment is correct", func(t *testing.T) {
 		env := CurrentEnvironment()
-		if len(env.ApplicationNames) != 2 {
-			t.Fatal("Application names not processed correctly.")
-		}
 
-		if !reflect.DeepEqual(env.ApplicationNames, []string{"testApp","testApp2"}) {
-			t.Fatal("Wrong Application Names set.")
+		if env.ApplicationName != "compproc" {
+			t.Fatal("Wrong Application Name set.")
 		}
 
 		if env.DataTypeStandard != "CWMS" {
@@ -66,6 +62,5 @@ func TestEnvironment(t *testing.T) {
 			t.Fatal("Office not set correctly.")
 		}
 
-		
 	})
 }

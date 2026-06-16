@@ -68,9 +68,9 @@ public class ComputeGageReleasePercent extends decodes.tsdb.algo.AW_AlgorithmBas
     {
         // An alternative optimization is to only gather data in the doAWTimeSlice
         // and then do any actual rating in the afterTimeSlices
-        connection = tsdb.getConnection();
         try
         {
+            connection = tsdb.getConnection();
             rateStmt = connection.prepareCall("" +
             "  declare\n" +
             "    l_ztsv cwms_t_ztsv_array;\n" +

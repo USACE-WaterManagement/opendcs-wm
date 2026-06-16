@@ -1,13 +1,13 @@
-ARG VERSION="sha-9211753"
-ARG MARKER="a"
+ARG VERSION="main-2026.06.03"
+ARG MARKER="f"
 
 # Intermediate container here to build district computations
-FROM golang:1.24.3 AS appstarter_builder
+FROM golang:1.26.1 AS appstarter_builder
 WORKDIR /usr/src/app
 COPY appstarter/ ./
 RUN go build cmd/appstarter.go
 
-FROM gradle:8.14-jdk AS algo_builder
+FROM gradle:9.4.0-jdk AS algo_builder
 COPY algorithms /home/gradle/project
 WORKDIR /home/gradle/project
 RUN ./gradlew installDist --info
@@ -41,4 +41,11 @@ USER opendcs:opendcs
 WORKDIR /dcs_user_dir
 CMD ["/migrate.sh"]
 
-# TODO API - waiting on some verification of the API status
+FROM ghcr.io/opendcs/web-api:${VERSION} AS web-api
+ARG VERSION
+ARG MARKER
+COPY --chmod=0555 scripts/web.sh /
+HEALTHCHECK  --interval=1m30s --timeout=30s --retries=5 --start-period=30s \
+    CMD curl http://localhost:7000/odcsapi/health/live" || exit 1
+
+ENTRYPOINT ["/web.sh"]

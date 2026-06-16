@@ -10,4 +10,5 @@
 rootProject.name = 'algorithms'
 
 include ':swd:swt'
+include ':support'
 include ':distribution'

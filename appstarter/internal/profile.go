@@ -30,24 +30,32 @@ func GetProfiles(environment EnvironmentVars, profileTemplate string) []Profile 
 		panic(err)
 	}
 
-	for _, app := range environment.ApplicationNames {
-		var office = environment.Office
-		var profileFile = fmt.Sprintf("%s.profile", app)
-		file, err := os.OpenFile(profileFile, os.O_RDWR|os.O_CREATE, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-		data := data{environment, office}
-		err = tmpl.Execute(file, data)
-		if err != nil {
-			panic(err)
-		}
-		ret = append(ret, Profile{profileFile, app, office})
+	var tmpProf = GetProfile(environment, *tmpl, "utility")
 
-		if err := file.Close(); err != nil {
-			log.Fatal(err)
-		}
+	var activeApps = GetActiveApps(tmpProf, environment)
 
+	for _, app := range activeApps {
+		ret = append(ret, GetProfile(environment, *tmpl, app))
 	}
 	return ret
+}
+
+func GetProfile(environment EnvironmentVars, template template.Template, appName string) Profile {
+	var office = environment.Office
+	var profileFile = fmt.Sprintf("%s.profile", appName)
+	file, err := os.OpenFile(profileFile, os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data := data{environment, office}
+
+	err = template.Execute(file, data)
+	if err != nil {
+		panic(err)
+	}
+	if err := file.Close(); err != nil {
+		log.Fatal(err)
+	}
+	return Profile{profileFile, appName, office}
 }

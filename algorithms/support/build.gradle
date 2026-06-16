@@ -2,3 +2,7 @@ plugins {
     id 'algorithms.deps-conventions'
     id 'algorithms.java-conventions'
 }
+
+dependencies {
+    implementation(libs.bundles.faster.xml)
+}

@@ -22,9 +22,9 @@ on:
       migration_image:
         description: Database Migration image
         value: ${{ jobs.release.outputs.migration_image }}
-      api_image:
-        description: REST API/UI Image
-        value: ${{ jobs.release.outputs.api_image }}
+      webapi_image:
+        description: Web API (REST + UI) Image
+        value: ${{ jobs.release.outputs.webapi_image }}
   workflow_dispatch:
     inputs:
       branch:
@@ -46,6 +46,7 @@ jobs:
         packages: write
         contents: write
     outputs:
+      webapi_image: ${{steps.build_image.outputs.webapi_image}}
       apps_image: ${{steps.build_image.outputs.apps_image}}
       lrgs_image: ${{steps.build_image.outputs.lrgs_image}}
       migration_image: ${{steps.build_image.outputs.migration_image}}
@@ -63,6 +64,25 @@ jobs:
         run: echo "VERSION=${{inputs.branch}}" >> $GITHUB_ENV
       - name: show version
         run: echo ${VERSION}
+      - name: Set up JDK
+        uses: actions/setup-java@v4.7.1
+        with:
+          java-version: 21
+          distribution: temurin      
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4.4.1
+      - name: Build algorithms
+        working-directory: algorithms
+        run: ./gradlew build --info
+      - name: Create GitHub Release
+        id: create_release
+        # Allow testing without creating a release
+        if: github.event_name != 'pull_request' && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/tags'))
+        uses: softprops/action-gh-release@v2.3.2
+        with:
+          files: algorithms/**/build/libs/*.jar
+          tag_name: ${{env.VERSION}}
+          token: ${{ secrets.token != null && secrets.token || secrets.GITHUB_TOKEN }}
       - name: Log in to the Container registry
         id: login-ghcr
         uses: docker/login-action@v3.3.0
@@ -81,18 +101,19 @@ jobs:
           docker build -t opendcs-lrgs:build-latest --target=lrgs .
           docker build -t opendcs-apps:build-latest --target=apps .
           docker build -t opendcs-migration:build-latest --target=migration .
-          docker tag opendcs-api:build-latest ghcr.io/${REPO}/opendcs-api:$VERSION
+          docker build -t opendcs-api:build-latest --target=web-api .
           docker tag opendcs-lrgs:build-latest ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker tag opendcs-apps:build-latest ghcr.io/${REPO}/opendcs-apps:$VERSION
           docker tag opendcs-migration:build-latest ghcr.io/${REPO}/opendcs-migration:$VERSION
-          docker push ghcr.io/${REPO}/opendcs-api:$VERSION
+          docker tag opendcs-api:build-latest ghcr.io/${REPO}/opendcs-api:$VERSION
           docker push ghcr.io/${REPO}/opendcs-lrgs:$VERSION
           docker push ghcr.io/${REPO}/opendcs-apps:$VERSION
           docker push ghcr.io/${REPO}/opendcs-migration:$VERSION
+          docker push ghcr.io/${REPO}/opendcs-api:$VERSION
           echo "apps_image=ghcr.io/${REPO}/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
           echo "lrgs_image=ghcr.io/${REPO}/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
           echo "migration_image=ghcr.io/${REPO}/opendcs-migration:$VERSION" >> $GITHUB_OUTPUT
-          echo "api_image=ghcr.io/${REPO}/opendcs-api:$VERSION" >> $GITHUB_OUTPUT
+          echo "webapi_image=ghcr.io/${REPO}/opendcs-api:$VERSION" >> $GITHUB_OUTPUT
       - name: Logout of GH registry
         if: ${{ always() }}
         run: |
