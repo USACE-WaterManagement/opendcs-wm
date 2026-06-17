@@ -33,9 +33,9 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
       iam_role: arn:aws-us-gov:iam::${{secrets.CWBI_PROD_ACCOUNT_AWS}}:role/github-actions-ecr-cwms-opendcs
     with:
-      apps_image: ${{needs.cwbi-test.outputs.apps_image}}
-      lrgs_image: ${{needs.cwbi-test.outputs.lrgs_image}}
-      migration_image: ${{needs.cwbi-test.outputs.migration_image}}
-      api_image: ${{needs.cwbi-test.outputs.webapi_image}}
+      apps_image: ${{needs.cwbi-prod.outputs.apps_image}}
+      lrgs_image: ${{needs.cwbi-prod.outputs.lrgs_image}}
+      migration_image: ${{needs.cwbi-prod.outputs.migration_image}}
+      api_image: ${{needs.cwbi-prod.outputs.webapi_image}}
       region: us-gov-west-1
       tag: prod
