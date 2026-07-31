@@ -10,7 +10,7 @@ cp -r $DCSTOOL_HOME/lrgs/netlist .
 #  Always generate Generate Config
 cat > $LRGSHOME/lrgs.conf <<EOF
 archiveDir: ${LRGS_ARCHIVE}
-numDayFiles: 31
+numDayFiles: 7
 ddsRecvConfig: ${LRGSHOME}/ddsrecv.conf
 enableDdsRecv=true
 enableDrgsRecv: false
