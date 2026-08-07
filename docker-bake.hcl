@@ -11,7 +11,7 @@ target "lrgs" {
     inherits = ["docker-metadata-action"]
     context = "."
     dockerfile = "Dockerfile"
-    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermangament/opendcs-wm/opendcs-lrgs:${tag}"]
+    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermanagement/opendcs-wm/opendcs-lrgs:${tag}"]
     target = "lrgs"
 }
 
@@ -19,7 +19,7 @@ target "apps" {
     inherits = ["docker-metadata-action"]
     context = "."
     dockerfile = "Dockerfile"
-    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermangament/opendcs-wm/opendcs-compproc:${tag}"]
+    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermanagement/opendcs-wm/opendcs-compproc:${tag}"]
     target = "apps"
 }
 
@@ -27,7 +27,7 @@ target "web-api" {
     inherits = ["docker-metadata-action"]
     context = "."
     dockerfile = "Dockerfile"
-    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermangament/opendcs-wm/opendcs-api:${tag}"]
+    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermanagement/opendcs-wm/opendcs-api:${tag}"]
     target = "web-api"
 }
 
@@ -35,6 +35,6 @@ target "migration" {
     inherits = ["docker-metadata-action"]
     context = "."
     dockerfile = "Dockerfile"
-    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermangament/opendcs-wm/opendcs-migration:${tag}"]
+    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermanagement/opendcs-wm/opendcs-migration:${tag}"]
     target = "migration"
 }
