@@ -2,7 +2,7 @@ ARG VERSION="main-2026.07.09"
 ARG MARKER="a"
 
 # Intermediate container here to build district computations
-FROM golang:1.26.1 AS appstarter_builder
+FROM golang:1.26.8 AS appstarter_builder
 WORKDIR /usr/src/app
 COPY appstarter/ ./
 RUN go build cmd/appstarter.go
@@ -12,7 +12,7 @@ COPY algorithms /home/gradle/project
 WORKDIR /home/gradle/project
 RUN ./gradlew installDist --info
 
-FROM ghcr.io/opendcs/compproc:${VERSION} AS apps
+FROM --platform=$BUILDPLATFORM ghcr.io/opendcs/compproc:${VERSION} AS apps
 ARG VERSION
 ARG MARKER
 # Add add in the custom algos
@@ -23,7 +23,7 @@ COPY scripts/logfilter.txt /dcs_user_dir/
 ENV IMAGE_MARKER=${MARKER}
 ENTRYPOINT ["/appstarter"]
 
-FROM ghcr.io/opendcs/lrgs:${VERSION} AS lrgs
+FROM --platform=$BUILDPLATFORM ghcr.io/opendcs/lrgs:${VERSION} AS lrgs
 ARG VERSION
 ARG MARKER
 ENV IMAGE_MARKER=${MARKER}
@@ -41,7 +41,7 @@ USER opendcs:opendcs
 WORKDIR /dcs_user_dir
 CMD ["/migrate.sh"]
 
-FROM ghcr.io/opendcs/web-api:${VERSION} AS web-api
+FROM --platform=$BUILDPLATFORM ghcr.io/opendcs/web-api:${VERSION} AS web-api
 ARG VERSION
 ARG MARKER
 COPY --chmod=0555 scripts/web.sh /

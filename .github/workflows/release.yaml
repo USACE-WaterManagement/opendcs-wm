@@ -89,26 +89,46 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.token != null && secrets.token || secrets.GITHUB_TOKEN }}
-      - name: Build docker image
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
+        with:
+          platforms: arm64
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
+      - name: Log in to the Container registry
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.token != null && secrets.token || secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf
+        with:
+          tags: |
+            type=sha
+            type=ref,event=tag
+            type=raw,value=${{env.VERSION}}
+            type=schedule,pattern=${{inputs.branch}}-{{date 'YYYY.MM.DD'}}
+            type=schedule,pattern=${{inputs.branch}}-{{date 'YYYY.MM.DD-hhmmss'}}
+      - name: Create and Push Docker images
+        id: baked
+        uses: docker/bake-action@a66e1c87e2eca0503c343edf1d208c716d54b8a8
+        with:
+          source: .
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
+          files: |
+            ./docker-bake.hcl
+            cwd://${{ steps.meta.outputs.bake-file }}
+          targets: lrgs,apps,web-api,migration
+          push: true
+      - name: Set output names
         id: build_image
         env:
           IMAGE_TAG: ${{env.VERSION}}
         run: |
-          REPO=`echo "${{github.repository}}" | tr  '[:upper:]' '[:lower:]'`
-          echo "REPO=$REPO" >> $GITHUB_ENV
-          docker build -t opendcs-api:build-latest -f Dockerfile.api .
-          docker build -t opendcs-lrgs:build-latest --target=lrgs .
-          docker build -t opendcs-apps:build-latest --target=apps .
-          docker build -t opendcs-migration:build-latest --target=migration .
-          docker build -t opendcs-api:build-latest --target=web-api .
-          docker tag opendcs-lrgs:build-latest ghcr.io/${REPO}/opendcs-lrgs:$VERSION
-          docker tag opendcs-apps:build-latest ghcr.io/${REPO}/opendcs-apps:$VERSION
-          docker tag opendcs-migration:build-latest ghcr.io/${REPO}/opendcs-migration:$VERSION
-          docker tag opendcs-api:build-latest ghcr.io/${REPO}/opendcs-api:$VERSION
-          docker push ghcr.io/${REPO}/opendcs-lrgs:$VERSION
-          docker push ghcr.io/${REPO}/opendcs-apps:$VERSION
-          docker push ghcr.io/${REPO}/opendcs-migration:$VERSION
-          docker push ghcr.io/${REPO}/opendcs-api:$VERSION
           echo "apps_image=ghcr.io/${REPO}/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
           echo "lrgs_image=ghcr.io/${REPO}/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
           echo "migration_image=ghcr.io/${REPO}/opendcs-migration:$VERSION" >> $GITHUB_OUTPUT
