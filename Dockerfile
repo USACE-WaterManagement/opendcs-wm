@@ -2,17 +2,19 @@ ARG VERSION="main-nightly"
 ARG MARKER="a"
 
 # Intermediate container here to build district computations
-FROM --platform=$BUILDPLATFORM golang:1.24.9 AS appstarter_builder
+# this needs to be build per-platform
+FROM golang:1.24.9 AS appstarter_builder
 WORKDIR /usr/src/app
 COPY appstarter/ ./
 RUN go build cmd/appstarter.go
 
-FROM gradle:8.14-jdk AS algo_builder
+# this only needs to be build once
+FROM --platform=$BUILDPLATFORM gradle:8.14-jdk AS algo_builder
 COPY algorithms /home/gradle/project
 WORKDIR /home/gradle/project
 RUN ./gradlew installDist --info
 
-FROM --platform=$BUILDPLATFORM ghcr.io/opendcs/compproc:${VERSION} AS apps
+FROM ghcr.io/opendcs/compproc:${VERSION} AS apps
 ARG VERSION
 ARG MARKER
 # Add add in the custom algos
@@ -23,14 +25,14 @@ COPY scripts/logfilter.txt /dcs_user_dir/
 ENV IMAGE_MARKER=${MARKER}
 ENTRYPOINT ["/appstarter"]
 
-FROM --platform=$BUILDPLATFORM ghcr.io/opendcs/lrgs:${VERSION} AS lrgs
+FROM ghcr.io/opendcs/lrgs:${VERSION} AS lrgs
 ARG VERSION
 ARG MARKER
 ENV IMAGE_MARKER=${MARKER}
 COPY --chmod=0555 scripts/lrgs-cwbi.sh /
 CMD ["/lrgs-cwbi.sh"]
 
-FROM --platform=$BUILDPLATFORM ghcr.io/opendcs/migration:${VERSION} AS migration
+FROM ghcr.io/opendcs/migration:${VERSION} AS migration
 ARG VERSION
 ARG MARKER
 USER root
@@ -41,7 +43,7 @@ USER opendcs:opendcs
 WORKDIR /dcs_user_dir
 CMD ["/cwbi-migrate.sh"]
 
-FROM --platform=$BUILDPLATFORM ghcr.io/opendcs/web-api:${VERSION} AS web-api
+FROM ghcr.io/opendcs/web-api:${VERSION} AS web-api
 ARG VERSION
 ARG MARKER
 COPY --chmod=0555 scripts/web.sh /
