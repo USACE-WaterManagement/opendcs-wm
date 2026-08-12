@@ -129,10 +129,10 @@ jobs:
         env:
           IMAGE_TAG: ${{env.VERSION}}
         run: |
-          echo "apps_image=ghcr.io/${REPO}/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
-          echo "lrgs_image=ghcr.io/${REPO}/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
-          echo "migration_image=ghcr.io/${REPO}/opendcs-migration:$VERSION" >> $GITHUB_OUTPUT
-          echo "webapi_image=ghcr.io/${REPO}/opendcs-api:$VERSION" >> $GITHUB_OUTPUT
+          echo "apps_image=ghcr.io/usace-watermanagement/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
+          echo "lrgs_image=ghcr.io/usace-watermanagement/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
+          echo "migration_image=ghcr.io/usace-watermanagement/opendcs-migration:$VERSION" >> $GITHUB_OUTPUT
+          echo "webapi_image=ghcr.io/usace-watermanagement/opendcs-api:$VERSION" >> $GITHUB_OUTPUT
       - name: Logout of GH registry
         if: ${{ always() }}
         run: |
