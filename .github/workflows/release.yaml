@@ -129,7 +129,7 @@ jobs:
         env:
           VERSION: ${{env.VERSION}}
         run: |
-          echo "apps_image=ghcr.io/usace-watermanagement/opendcs-wm/openopendcs-apps:$VERSION" >> $GITHUB_OUTPUT
+          echo "apps_image=ghcr.io/usace-watermanagement/opendcs-wm/opendcs-apps:$VERSION" >> $GITHUB_OUTPUT
           echo "lrgs_image=ghcr.io/usace-watermanagement/opendcs-wm/opendcs-lrgs:$VERSION" >> $GITHUB_OUTPUT
           echo "migration_image=ghcr.io/usace-watermanagement/opendcs-wm/opendcs-migration:$VERSION" >> $GITHUB_OUTPUT
           echo "webapi_image=ghcr.io/usace-watermanagement/opendcs-wm/opendcs-api:$VERSION" >> $GITHUB_OUTPUT
