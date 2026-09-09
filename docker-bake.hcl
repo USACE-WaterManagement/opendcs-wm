@@ -19,7 +19,7 @@ target "apps" {
     inherits = ["docker-metadata-action"]
     context = "."
     dockerfile = "Dockerfile"
-    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermanagement/opendcs-wm/opendcs-compproc:${tag}"]
+    tags = [for tag in target.docker-metadata-action.tags : "ghcr.io/usace-watermanagement/opendcs-wm/opendcs-apps:${tag}"]
     target = "apps"
 }
 
