@@ -1,4 +1,4 @@
-ARG VERSION="main-2026.09.07"
+ARG VERSION="main-2026.09.23"
 ARG MARKER="a"
 
 # Intermediate container here to build district computations
@@ -8,7 +8,7 @@ COPY appstarter/ ./
 RUN go build cmd/appstarter.go
 
 # this only needs to be build once
-FROM --platform=$BUILDPLATFORM gradle:9.4.1-jdk AS algo_builder
+FROM --platform=$BUILDPLATFORM gradle:9.6.1-jdk AS algo_builder
 COPY algorithms /home/gradle/project
 WORKDIR /home/gradle/project
 RUN ./gradlew installDist --info

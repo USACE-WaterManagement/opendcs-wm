@@ -39,8 +39,8 @@ quit
 EOF
 
     cat <<EOF >> ${LRGSHOME}/ddsrecv.conf
-  <connection number="$index" host="cdadata.wcds.noaa.gov">
-		<name>NOAA CDADTA</name>
+  <connection number="$index" host="cdadata.wcda.noaa.gov">
+		<name>NOAA CDADATA</name>
 		<port>16003</port>
 		<enabled>true</enabled>
     <use-tls>TLS</use-tls>
