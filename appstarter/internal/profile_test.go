@@ -6,9 +6,17 @@ import (
 )
 
 func TestProfiles(t *testing.T) {
+	oldGetActiveApps := GetActiveApps
+	defer func() { GetActiveApps = oldGetActiveApps }()
+
+	GetActiveApps = func(profile Profile, env EnvironmentVars) []string {
+		// Real implementation (e.g., API call, DB query)
+		var apps = []string{"test"}
+		return apps
+	}
 
 	env := EnvironmentVars{"XML", "jdbc:test", "noop", "org.opendcs.testing", "SPK",
-		"CWMS", "fake", "compproc", "/tmp/installDir", "/tmp/userDir"}
+		"CWMS", "fake", "compproc", "test/installDir", "test/userDir"}
 
 	profiles := GetProfiles(env, ProfileTemplate)
 

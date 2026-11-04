@@ -2,7 +2,7 @@ ARG VERSION="sha-7be6446"
 ARG MARKER="a"
 
 # Intermediate container here to build district computations
-FROM golang:1.26.8 AS appstarter_builder
+FROM golang:1.27.3 AS appstarter_builder
 WORKDIR /usr/src/app
 COPY appstarter/ ./
 RUN go build cmd/appstarter.go

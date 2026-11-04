@@ -13,7 +13,8 @@ type CompApp struct {
 	Properties       map[string]string `json:"properties"`
 }
 
-func GetActiveApps(profile Profile, env EnvironmentVars) []string {
+// assigned to var to allow simple test mock
+var GetActiveApps = func(profile Profile, env EnvironmentVars) []string {
 	var ret []string
 
 	var app = CreateApp(profile, env, "mil.usace.army.opendcs.support.ListCompApps")
