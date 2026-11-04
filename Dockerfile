@@ -16,6 +16,9 @@ RUN ./gradlew installDist --info
 FROM ghcr.io/opendcs/compproc:${VERSION} AS apps
 ARG VERSION
 ARG MARKER
+USER root
+RUN apk upgrade --no-cache
+USER opendcs
 # Add add in the custom algos
 COPY --from=algo_builder /home/gradle/project/distribution/build/install/district-algorithms/ /dcs_user_dir/dep/
 #HEALTHCHECK --interval=2m --timeout=30s --start-period=60s --retries=3 CMD [ "/appstarter", "--check" ]
@@ -27,6 +30,9 @@ ENTRYPOINT ["/appstarter"]
 FROM ghcr.io/opendcs/lrgs:${VERSION} AS lrgs
 ARG VERSION
 ARG MARKER
+USER root
+RUN apk upgrade --no-cache
+USER opendcs
 ENV IMAGE_MARKER=${MARKER}
 COPY --chmod=0555 scripts/lrgs-cwbi.sh /
 CMD ["/lrgs-cwbi.sh"]
@@ -35,16 +41,21 @@ FROM ghcr.io/opendcs/migration:${VERSION} AS migration
 ARG VERSION
 ARG MARKER
 USER root
+RUN apk upgrade --no-cache
 RUN apk add --no-cache util-linux
+USER opendcs:opendcs
 ENV IMAGE_MARKER=${MARKER}
 COPY --chmod=0555 scripts/migrate.sh /
-USER opendcs:opendcs
+
 WORKDIR /dcs_user_dir
 CMD ["/migrate.sh"]
 
 FROM ghcr.io/opendcs/web-api:${VERSION} AS web-api
 ARG VERSION
 ARG MARKER
+USER root
+RUN apk upgrade --no-cache
+USER opendcs
 COPY --chmod=0555 scripts/web.sh /
 HEALTHCHECK  --interval=1m30s --timeout=30s --retries=5 --start-period=30s \
     CMD curl http://localhost:7000/odcsapi/health/live" || exit 1
