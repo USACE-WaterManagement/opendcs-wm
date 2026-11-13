@@ -11,18 +11,23 @@ on:
 
 jobs:
   test:
-    name: Run tests
+    name: Lint and test
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v5.0.2
-        with:
-          go-version: 1.23.2
-      - name: test
-        working-directory: appstarter/internal
-        run: go test -v
+      - name: Report toolchain
+        working-directory: appstarter
+        run: rustc --version && cargo --version
+      - name: Check formatting
+        working-directory: appstarter
+        run: cargo fmt --check
+      - name: Clippy
+        working-directory: appstarter
+        run: cargo clippy --all-targets --locked -- -D warnings
+      - name: Test
+        working-directory: appstarter
+        run: cargo test --locked
   build:
     name: Build container
     runs-on: ubuntu-latest

@@ -1,0 +1,26 @@
+[package]
+name = "appstarter"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+description = "Starts and supervises multiple OpenDCS java applications inside a single container"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+dotenvy = "0.15"
+libc = "0.2"
+minijinja = "2"
+regex = "1.11"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+signal-hook = "0.3"
+time = { version = "0.3", features = ["local-offset"] }
+walkdir = "2.5"
+
+[dev-dependencies]
+tempfile = "3"
+
+# The binary ends up inside the compproc container image, keep it small.
+[profile.release]
+strip = true

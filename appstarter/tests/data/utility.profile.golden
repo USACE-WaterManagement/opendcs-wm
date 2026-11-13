@@ -1,0 +1,35 @@
+# NOTE: This instance is for testing this app, it is not included in the Dockerfile as
+# it already contains an appropriate template file. 
+# The names values starting with OPENDCS_ 
+# are substitution placeholders for the 
+# initial docker run of the particular application
+#
+EditDatabaseType=XML
+EditDatabaseLocation=jdbc:test
+# Settings for the dbedit GUI:
+EditPresentationGroup=SHEF-English
+routingStatusDir=$DCSTOOL_USERDIR/routstat
+
+# Various agency-specific preferences:
+SiteNameTypePreference=CWMS
+EditTimeZone=UTC
+EditOutputFormat=Human-Readable
+
+jdbcDriverClass=org.opendcs.testing
+
+SqlKeyGenerator=decodes.sql.OracleSequenceKeyGenerator
+sqlDateFormat=yyyy-MM-dd HH\:mm\:ss
+sqlTimeZone=UTC
+dbOfficeId=SPK
+CwmsOfficeId=SPK
+transportMediumTypePreference=goes
+
+#defaultDataSource=
+dataTypeStdPreference=CWMS
+#decwizTimeZone=
+#decwizOutputFormat=
+#decwizDebugLevel=
+#decwizDecodedDataDir=
+#decwizSummaryLog=
+
+dbAuthFile=noop

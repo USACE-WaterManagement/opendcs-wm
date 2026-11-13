@@ -1,13 +1,15 @@
 ARG VERSION="main-nightly"
 ARG MARKER="a"
 
-# Intermediate container here to build district computations
+# Intermediate container here to build the appstarter supervisor
 # this needs to be build per-platform
-FROM golang:1.24.9 AS appstarter_builder
+FROM rust:1.100.0-slim AS appstarter_builder
 WORKDIR /usr/src/app
 COPY appstarter/ ./
-RUN go build cmd/appstarter.go
+# Cargo.lock is checked in, --locked keeps the image build reproducible.
+RUN cargo build --release --locked && cp target/release/appstarter ./appstarter
 
+# Intermediate container here to build district computations
 # this only needs to be build once
 FROM --platform=$BUILDPLATFORM gradle:8.14-jdk AS algo_builder
 COPY algorithms /home/gradle/project

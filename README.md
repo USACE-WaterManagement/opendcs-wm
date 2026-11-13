@@ -12,6 +12,9 @@ at https://github.com/opendcs/opendcs.
 This is a temporary program that will be used to handle multiple offices and compproc instances until such time
 as the main OpenDCS can handle that correctly.
 
+It lives in [appstarter](appstarter/), is written in Rust, and is the entrypoint of the `apps` container image.
+See [appstarter/README.md](appstarter/README.md) for what it does, the environment it needs and how to build it.
+
 # District Algorithms (future)
 
 There will be a location here to either:
