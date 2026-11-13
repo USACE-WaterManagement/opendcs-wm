@@ -1,23 +1,8 @@
 //! appstarter starts the OpenDCS java applications this container is
 //! configured for and keeps them running.
 //!
-//! One container can host several offices and several compproc instances, which
-//! OpenDCS itself doesn't handle yet, so this program:
-//!
-//! 1. reads the OpenDCS environment,
-//! 2. writes a `decodes.properties` profile per application,
-//! 3. asks the database which computation applications belong to this image,
-//! 4. starts one java process per application and copies its output,
-//! 5. exits once every application has exited, so the container runtime
-//!    replaces the pod.
-//!
-//! Rust replacement for `cmd/appstarter.go`.
-
-mod app;
-mod applist;
-mod env;
-mod logging;
-mod profile;
+//! Command line wrapper around the library in `src/lib.rs`, which holds the
+//! behaviour and is what the tests in `tests/` drive.
 
 use std::path::Path;
 use std::process::ExitCode;
@@ -28,8 +13,9 @@ use std::time::{Duration, Instant};
 use anyhow::{bail, Context, Result};
 use clap::Parser;
 
-use crate::app::TsdbApp;
-use crate::profile::Profile;
+use appstarter::app::TsdbApp;
+use appstarter::profile::Profile;
+use appstarter::{app, applist, env, logging, profile};
 
 /// How often the supervisor looks at its children.
 const POLL_INTERVAL: Duration = Duration::from_secs(5);

@@ -113,7 +113,11 @@ fn normalize_go_template(template: &str) -> std::borrow::Cow<'_, str> {
     dotted_action.replace_all(template, "{$1$2")
 }
 
-fn render(template: &str, env: &EnvironmentVars) -> Result<String> {
+/// Renders the profile template for one environment.
+///
+/// Public so `tests/profile.rs` can pin the exact bytes of a profile;
+/// `render_profile` is what the program itself calls.
+pub fn render(template: &str, env: &EnvironmentVars) -> Result<String> {
     let template = normalize_go_template(template);
     let context = context! {
         Env => TemplateEnv {
@@ -142,126 +146,4 @@ fn render(template: &str, env: &EnvironmentVars) -> Result<String> {
     jinja
         .render_str(&template, context)
         .context("unable to render the profile template")
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::fs;
-
-    fn environment() -> EnvironmentVars {
-        EnvironmentVars {
-            database_type: "XML".to_string(),
-            database_url: "jdbc:test".to_string(),
-            database_auth: "noop".to_string(),
-            database_driver: "org.opendcs.testing".to_string(),
-            office: "SPK".to_string(),
-            data_type_standard: "CWMS".to_string(),
-            key_generator: "fake".to_string(),
-            application_name: "compproc".to_string(),
-            install_dir: PathBuf::from("/tmp/installDir"),
-            user_dir: PathBuf::from("/tmp/userDir"),
-        }
-    }
-
-    /// Replacement for `TestProfiles` from the Go implementation, minus the
-    /// java call, which lives in `applist`.
-    #[test]
-    fn profiles_are_created_for_every_app() {
-        let out = tempfile::tempdir().unwrap();
-        let env = environment();
-        let apps = ["compproc".to_string(), "compdepends".to_string()];
-
-        let profiles = get_profiles(&env, PROFILE_TEMPLATE, out.path(), &apps).unwrap();
-
-        assert_eq!(profiles.len(), apps.len());
-        for (profile, app_name) in profiles.iter().zip(apps) {
-            assert_eq!(profile.office, "SPK");
-            assert_eq!(profile.app_name, app_name);
-            assert_eq!(
-                profile.profile_file,
-                out.path().join(format!("{app_name}.profile"))
-            );
-            let contents = fs::read_to_string(&profile.profile_file).unwrap();
-            assert!(
-                contents.contains("CwmsOfficeId=SPK"),
-                "profile for {app_name} was not rendered: {contents}"
-            );
-        }
-    }
-
-    /// The Go implementation rendered the same template, with the same values
-    /// this module's `environment()` builds, into
-    /// `tests/data/utility.profile`. It is kept as a fixture so the port cannot
-    /// quietly change a single byte of a profile.
-    #[test]
-    fn renders_exactly_what_the_go_version_rendered() {
-        let golden = include_str!("../tests/data/utility.profile.golden");
-        assert_eq!(render(PROFILE_TEMPLATE, &environment()).unwrap(), golden);
-    }
-
-    #[test]
-    fn the_shipped_template_renders_every_value() {
-        let rendered = render(PROFILE_TEMPLATE, &environment()).unwrap();
-
-        assert!(
-            !rendered.contains("{{"),
-            "unrendered placeholder:\n{rendered}"
-        );
-        for expected in [
-            "EditDatabaseType=XML",
-            "EditDatabaseLocation=jdbc:test",
-            "SiteNameTypePreference=CWMS",
-            "jdbcDriverClass=org.opendcs.testing",
-            "dbOfficeId=SPK",
-            "CwmsOfficeId=SPK",
-            "dataTypeStdPreference=CWMS",
-            "dbAuthFile=noop",
-        ] {
-            assert!(rendered.contains(expected), "missing {expected}");
-        }
-        // Values that are not placeholders must survive untouched.
-        for expected in [
-            "routingStatusDir=$DCSTOOL_USERDIR/routstat",
-            "sqlDateFormat=yyyy-MM-dd HH\\:mm\\:ss",
-            "SqlKeyGenerator=decodes.sql.OracleSequenceKeyGenerator",
-        ] {
-            assert!(rendered.contains(expected), "mangled {expected}");
-        }
-    }
-
-    #[test]
-    fn go_style_placeholders_are_accepted_with_and_without_spaces() {
-        let env = environment();
-        let rendered = render(
-            "office={{ .Office }}\napp={{.Env.ApplicationName}}\ndrive={{- .Env.DatabaseDriver}}\n",
-            &env,
-        )
-        .unwrap();
-
-        assert_eq!(
-            rendered,
-            "office=SPK\napp=compproc\ndrive=org.opendcs.testing\n"
-        );
-    }
-
-    #[test]
-    fn re_rendering_replaces_the_previous_contents() {
-        let out = tempfile::tempdir().unwrap();
-        let env = environment();
-        let path = out.path().join("utility.profile");
-        fs::write(&path, "a very long line that should not be left behind\n").unwrap();
-
-        render_profile(&env, PROFILE_TEMPLATE, out.path(), "utility").unwrap();
-
-        assert!(!fs::read_to_string(&path)
-            .unwrap()
-            .contains("should not be left behind"));
-    }
-
-    #[test]
-    fn unknown_template_variables_are_reported() {
-        let err = render("{{ .Env.DoesNotExist }}", &environment()).unwrap_err();
-        assert!(err.to_string().contains("profile template"));
-    }
 }

@@ -67,7 +67,7 @@ class are ignored, the container runtime sometimes appends its own.
 
 ```sh
 cargo build --release     # target/release/appstarter
-cargo test                # unit tests plus end to end tests against a fake java
+cargo test                # everything under tests/
 cargo clippy --all-targets -- -D warnings
 cargo fmt --check
 ```
@@ -75,6 +75,18 @@ cargo fmt --check
 The container image builds this crate in the `appstarter_builder` stage of the
 top level `Dockerfile` and copies the binary to `/appstarter`, which is the
 entrypoint of the `apps` image.
+
+## Layout
+
+* `src/lib.rs` holds the behaviour, one module per job: `env`, `profile`,
+  `applist`, `app`, `logging`.
+* `src/main.rs` is the command line, the signal handling and the supervisor
+  loop.
+* `tests/` holds every test, one file per module plus `end_to_end.rs`. Nothing
+  is tested from inside `src/`, which is why a handful of java format helpers
+  (`build_class_path`, `write_prop_file`, `java_command`, `describe_command`,
+  `prop_file_path`, `render`) are public: the tests need them, nothing else in
+  the program does.
 
 ## Notes for anyone changing it
 
