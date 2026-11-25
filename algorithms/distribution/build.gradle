@@ -6,10 +6,12 @@ plugins {
 
 configurations {
     swd
+    spd
 }
 
 dependencies {
     swd(project(":swd:swt"))
+    spd(project(":spd:spk"))
 }
 
 configurations.all {
